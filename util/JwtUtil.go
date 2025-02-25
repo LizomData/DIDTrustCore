@@ -1,7 +1,9 @@
 package util
 
 import (
+	"DIDTrustCore/model"
 	"DIDTrustCore/model/requestBase"
+	"DIDTrustCore/util/dataBase"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
@@ -17,10 +19,10 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func GenerateToken(userId uint, userName string, expiredTime time.Duration) (string, error) {
+func GenerateToken(user model.User, expiredTime time.Duration) (string, error) {
 	claims := Claims{
-		UserID:   userId,
-		Username: userName,
+		UserID:   user.ID,
+		Username: user.Username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * expiredTime).Unix(),
 		},
@@ -51,7 +53,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userID", claims.UserID)
+		isFound, user := dataBase.FindUserById(claims.UserID)
+		if !isFound {
+			c.JSON(requestBase.ResponseBody(requestBase.NotUser, "用户不存在", gin.H{}))
+			c.Abort()
+			return
+		}
+
+		c.Set("user", user)
 		c.Next()
 	}
 }

@@ -47,6 +47,17 @@ func FindUser(username string) (bool, model.User) {
 
 }
 
+// 查询用户
+func FindUserById(userId uint) (bool, model.User) {
+	var user model.User
+	result := db.First(&user, "id = ?", userId)
+	if result.Error != nil {
+		return false, user
+	}
+	return true, user
+
+}
+
 // 更新用户
 func UpdateUser(user model.User) error {
 	result := db.Save(&user)

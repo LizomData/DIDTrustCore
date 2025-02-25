@@ -11,6 +11,8 @@ const (
 	RegisterAlready
 	IllegalCharacter
 	IncorrectFormat
+	NotUser
+	NotPrivileged
 )
 const (
 	Success int = iota
