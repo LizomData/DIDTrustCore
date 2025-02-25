@@ -7,17 +7,6 @@ import (
 	"errors"
 )
 
-// 密钥（16 字节 = AES-128, 24 字节 = AES-192, 32 字节 = AES-256）
-var Key_aes = []byte("d8d73c9f91ad4fc689cf1dac563dc906") // 16 字节密钥（AES-128）
-
-func EncryptPassword(password string) (string, error) {
-	return AESECBEncrypt(Key_aes, password)
-}
-
-func DecryptPassword(password string) (string, error) {
-	return AESECBDecrypt(Key_aes, password)
-}
-
 // AES ECB 加密
 func AESECBEncrypt(key []byte, plaintext string) (string, error) {
 	block, err := aes.NewCipher(key)
