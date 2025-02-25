@@ -1,0 +1,42 @@
+definitions:
+  model.User:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  requestBase.ResponseBodyData:
+    properties:
+      code:
+        type: integer
+      data:
+        additionalProperties: {}
+        type: object
+      msg:
+        example: 成功
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/account/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 登录凭证
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/requestBase.ResponseBodyData'
+      summary: 用户登陆
+swagger: "2.0"

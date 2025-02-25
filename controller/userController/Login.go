@@ -7,12 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary 用户登陆
+// @Accept       json
+// @Produce      json
+// @Param  body body model.User true "登录凭证"
+// @Success 200 {object} requestBase.ResponseBodyData "成功"
+// @Router /api/v1/account/login [post]
 func loginHandler(c *gin.Context) {
 	vail, user := validateForm(c)
 	if !vail {
 		return
 	}
-
 	isFound, _user := dataBase.FindUser(user.Username)
 	//密码校验
 	if !isFound || _user.Password != user.Password {
