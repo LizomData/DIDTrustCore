@@ -9,6 +9,8 @@ const (
 	TokenGenerationFailed
 	RegisterFailed
 	RegisterAlready
+	IllegalCharacter
+	IncorrectFormat
 )
 const (
 	Success int = iota

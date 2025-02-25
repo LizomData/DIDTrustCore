@@ -5,6 +5,7 @@ import (
 	"DIDTrustCore/model"
 	"DIDTrustCore/model/requestBase"
 	"DIDTrustCore/util"
+	"DIDTrustCore/util/dataBase"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,6 +15,12 @@ func loginHandler(c *gin.Context) {
 	//校验参数
 	if err := c.ShouldBindBodyWithJSON(&user); err != nil || !verificationController2.VerifyHeaders(c) || !verifyLoginJson(user) {
 		c.JSON(requestBase.ResponseBody(requestBase.ParameterError, "参数错误", gin.H{}))
+		return
+	}
+
+	//密码校验
+	if isFound, _user := dataBase.FindUser(user.Username); !isFound || _user.Password != user.Password {
+		c.JSON(requestBase.ResponseBody(requestBase.LoginFailed, "用户名或密码错误", gin.H{}))
 		return
 	}
 

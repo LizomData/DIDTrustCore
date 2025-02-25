@@ -37,12 +37,13 @@ func CreateUser(user model.User) error {
 }
 
 // 查询用户
-func FindUser(user model.User) bool {
-	result := db.First(&user, "username = ?", user.Username)
+func FindUser(username string) (bool, model.User) {
+	var user model.User
+	result := db.First(&user, "username = ?", username)
 	if result.Error != nil {
-		return false
+		return false, user
 	}
-	return true
+	return true, user
 
 }
 

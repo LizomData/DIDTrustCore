@@ -18,8 +18,14 @@ func registerHandler(c *gin.Context) {
 		return
 	}
 
+	//非法字符
+	if !validateUsername(user.Username) || !validatePassword(user.Password) {
+		c.JSON(requestBase.ResponseBody(requestBase.IllegalCharacter, "非法字符", gin.H{}))
+		return
+	}
+
 	//查询重复
-	if dataBase.FindUser(user) {
+	if isFound, _ := dataBase.FindUser(user.Username); isFound {
 		c.JSON(requestBase.ResponseBody(requestBase.RegisterAlready, "用户已被注册", gin.H{}))
 		return
 	}
