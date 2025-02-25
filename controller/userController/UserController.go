@@ -1,6 +1,7 @@
 package userController
 
 import (
+	"DIDTrustCore/model"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"regexp"
@@ -35,4 +36,7 @@ func validatePassword(password string) bool {
 	}
 	return matched
 
+}
+func verifyLoginJson(user model.User) bool {
+	return !(user.Username == "" || user.Password == "")
 }

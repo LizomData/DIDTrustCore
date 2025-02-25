@@ -4,6 +4,7 @@ import (
 	verificationController2 "DIDTrustCore/controller/riskController"
 	"DIDTrustCore/model"
 	"DIDTrustCore/model/requestBase"
+	"DIDTrustCore/util"
 	"DIDTrustCore/util/dataBase"
 	"github.com/gin-gonic/gin"
 	"time"
@@ -17,6 +18,14 @@ func registerHandler(c *gin.Context) {
 		c.JSON(requestBase.ResponseBody(requestBase.ParameterError, "参数错误", gin.H{}))
 		return
 	}
+
+	password_decrypt, err := util.DecryptPassword(user.Password)
+	//解密密码
+	if err != nil {
+		c.JSON(requestBase.ResponseBody(requestBase.IllegalCharacter, "格式不正确", gin.H{}))
+		return
+	}
+	user.Password = password_decrypt
 
 	//非法字符
 	if !validateUsername(user.Username) || !validatePassword(user.Password) {

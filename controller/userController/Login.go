@@ -18,6 +18,14 @@ func loginHandler(c *gin.Context) {
 		return
 	}
 
+	password_decrypt, err := util.DecryptPassword(user.Password)
+	//解密密码
+	if err != nil {
+		c.JSON(requestBase.ResponseBody(requestBase.IllegalCharacter, "格式不正确", gin.H{}))
+		return
+	}
+	user.Password = password_decrypt
+
 	//密码校验
 	if isFound, _user := dataBase.FindUser(user.Username); !isFound || _user.Password != user.Password {
 		c.JSON(requestBase.ResponseBody(requestBase.LoginFailed, "用户名或密码错误", gin.H{}))
@@ -36,8 +44,4 @@ func loginHandler(c *gin.Context) {
 		"token":    tokenString,
 	}))
 
-}
-
-func verifyLoginJson(user model.User) bool {
-	return !(user.Username == "" || user.Password == "")
 }
