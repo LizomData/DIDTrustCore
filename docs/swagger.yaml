@@ -20,6 +20,24 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/v1/account/getUserInfo:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/requestBase.ResponseBodyData'
+      summary: 用户信息
   /api/v1/account/login:
     post:
       consumes:
@@ -39,4 +57,59 @@ paths:
           schema:
             $ref: '#/definitions/requestBase.ResponseBodyData'
       summary: 用户登陆
+  /api/v1/account/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 注册凭证
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/requestBase.ResponseBodyData'
+      summary: 用户注册
+  /api/v1/service/checkSoft:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/requestBase.ResponseBodyData'
+      summary: 功能api
+  /api/v1/service/checkSoftV2:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/requestBase.ResponseBodyData'
+      summary: 功能api2
 swagger: "2.0"

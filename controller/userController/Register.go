@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+// @Summary 用户注册
+// @Accept       json
+// @Produce      json
+// @Param  body body model.User true "注册凭证"
+// @Success 200 {object} requestBase.ResponseBodyData "成功"
+// @Router /api/v1/account/register [post]
 func registerHandler(c *gin.Context) {
 
 	vail, user := validateForm(c)
