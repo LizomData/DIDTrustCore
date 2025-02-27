@@ -1,7 +1,6 @@
 package requestBase
 
 import (
-	"DIDTrustCore/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,9 +30,4 @@ func ResponseBodySuccess(data any) (int, gin.H) {
 		"msg":  "成功",
 		"data": data,
 	}
-}
-
-func GetUserFromContext(c *gin.Context) model.User {
-	_user, _ := c.Get("user")
-	return _user.(model.User)
 }
