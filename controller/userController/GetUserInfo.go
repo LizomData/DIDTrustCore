@@ -1,6 +1,7 @@
 package userController
 
 import (
+	"DIDTrustCore/common"
 	"DIDTrustCore/model/requestBase"
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +13,7 @@ import (
 // @Success 200 {object} requestBase.ResponseBodyData "成功"
 // @Router /api/v1/account/getUserInfo [get]
 func getUserInfo(c *gin.Context) {
-	user := requestBase.GetUserFromContext(c)
+	user := common.GetUserFromContext(c)
 	c.JSON(requestBase.ResponseBodySuccess(gin.H{
 		"userInfo": gin.H{"userId": user.ID, "username": user.Username, "privilegeLevel": user.PrivilegeLevel}}))
 
