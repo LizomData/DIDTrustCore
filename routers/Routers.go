@@ -16,7 +16,8 @@ func Include(opts ...Option) {
 
 // 初始化
 func Init() *gin.Engine {
-	r := gin.New()
+	gin.SetMode(gin.DebugMode)
+	r := gin.Default()
 	r.Use(util.Cors())
 	for _, opt := range options {
 		opt(r)
