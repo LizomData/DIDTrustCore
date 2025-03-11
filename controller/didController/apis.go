@@ -29,11 +29,12 @@ func CreateSoftwareIdentityApi(c *gin.Context) {
 		return
 	}
 	doc := CreateDIDDocument(name)
-	if err := CreateSoftwareIdentity(did_connnection.FabricClient, doc); err != nil {
+	didID, err := CreateSoftwareIdentity(did_connnection.FabricClient, doc)
+	if err != nil {
 		c.JSON(requestBase.ResponseBody(500, err.Error(), nil))
 		return
 	}
-	c.JSON(requestBase.ResponseBody(200, "创建成功", nil))
+	c.JSON(requestBase.ResponseBody(200, "创建成功", "DidID:"+didID))
 	return
 }
 
