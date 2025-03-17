@@ -153,16 +153,15 @@ paths:
           schema:
             $ref: '#/definitions/requestBase.ResponseBodyData'
   /api/v1/did/query_identity:
-    post:
+    get:
       consumes:
       - application/json
       parameters:
-      - description: did标识符
-        in: body
-        name: body
+      - description: didID
+        in: query
+        name: did
         required: true
-        schema:
-          type: string
+        type: string
       produces:
       - application/json
       responses:

@@ -134,7 +134,7 @@ const docTemplate = `{
             }
         },
         "/api/v1/did/query_identity": {
-            "post": {
+            "get": {
                 "consumes": [
                     "application/json"
                 ],
@@ -143,13 +143,11 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "description": "did标识符",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "type": "string",
+                        "description": "didID",
+                        "name": "did",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
