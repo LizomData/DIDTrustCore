@@ -170,7 +170,7 @@ paths:
           schema:
             $ref: '#/definitions/requestBase.ResponseBodyData'
   /api/v1/did/update_identity:
-    post:
+    put:
       consumes:
       - application/json
       parameters:

@@ -43,7 +43,7 @@ func CreateSoftwareIdentityApi(c *gin.Context) {
 // @Produce      json
 // @Param   body body model.DidDocument true "新的did文档"
 // @Success 200 {object} requestBase.ResponseBodyData "成功"
-// @Router /api/v1/did/update_identity [post]
+// @Router /api/v1/did/update_identity [put]
 func UpdateSoftwareIdentityApi(c *gin.Context) {
 	var newDocument model.DidDocument
 	if err := c.ShouldBindJSON(&newDocument); err != nil {
