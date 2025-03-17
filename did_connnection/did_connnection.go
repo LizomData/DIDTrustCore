@@ -15,11 +15,11 @@ import (
 
 const (
 	mspID        = "Org1MSP"
-	cryptoPath   = "./test-network/organizations/peerOrganizations/org1.example.com"
+	cryptoPath   = "./org1.example.com"
 	certPath     = cryptoPath + "/users/User1@org1.example.com/msp/signcerts"
 	keyPath      = cryptoPath + "/users/User1@org1.example.com/msp/keystore"
 	tlsCertPath  = cryptoPath + "/peers/peer0.org1.example.com/tls/ca.crt"
-	peerEndpoint = "dns:///192.168.88.131:7051"
+	peerEndpoint = "dns:///jzhangluo.com:7051"
 	gatewayPeer  = "peer0.org1.example.com"
 )
 

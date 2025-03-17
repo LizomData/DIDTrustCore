@@ -65,9 +65,9 @@ func UpdateSoftwareIdentityApi(c *gin.Context) {
 // QuerySoftwareIdentityApi  @Summary 查询did文档
 // @Accept       json
 // @Produce      json
-// @Param    body body string true "did标识符"
+// @Param did query string true "didID"
 // @Success 200 {object} requestBase.ResponseBodyData "成功"
-// @Router /api/v1/did/query_identity [post]
+// @Router /api/v1/did/query_identity [get]
 func QuerySoftwareIdentityApi(c *gin.Context) {
 	did := c.Query("did")
 	if did == "" {
