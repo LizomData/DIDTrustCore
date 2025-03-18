@@ -12,6 +12,6 @@ func Routers(e *gin.Engine) {
 		group.GET("/query_identity", QuerySoftwareIdentityApi)
 		group.PUT("/update_document", UpdateSoftwareIdentityApi)
 		group.PUT("/update_key")
-		group.DELETE("/delete_identity")
+		group.DELETE("/remove_identity", RemoveSoftwareIdentityApi)
 	}
 }

@@ -138,10 +138,11 @@ paths:
     post:
       consumes:
       - application/json
+      description: 通过传入软件包名称后台自动生成一个did标识符，并生成与其对应的did文档
       parameters:
       - description: 软件名称
         in: body
-        name: body
+        name: name
         required: true
         schema:
           type: string
@@ -156,10 +157,29 @@ paths:
     get:
       consumes:
       - application/json
+      description: 通过didID来查询软件标识，传入指定的didID可以查询到该指定的文档，想要获取链上全部标识时，参数填“all”会返回所有标识。
       parameters:
-      - description: didID
+      - description: '查询单个标识时传入该文档指定的didID，想要获取全部标识时，就直接传入参数“all”。 '
         in: query
         name: did
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/requestBase.ResponseBodyData'
+  /api/v1/did/remove_identity:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: 通过表单数据来删除标识信息，注意是表单数据哦！！！
+      parameters:
+      - description: didID
+        in: formData
+        name: didID
         required: true
         type: string
       produces:
@@ -173,6 +193,7 @@ paths:
     put:
       consumes:
       - application/json
+      description: 通过传入结构体body数据来更新标识信息，注意这个结构体仅仅只是Document这一部分哦，这只是整个标识数据模型中的一部分，切记不要传入整个标识！！！
       parameters:
       - description: 新的did文档
         in: body
