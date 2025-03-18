@@ -94,6 +94,7 @@
         },
         "/api/v1/did/create_identity": {
             "post": {
+                "description": "通过传入软件包名称后台自动生成一个did标识符，并生成与其对应的did文档",
                 "consumes": [
                     "application/json"
                 ],
@@ -103,7 +104,7 @@
                 "parameters": [
                     {
                         "description": "软件名称",
-                        "name": "body",
+                        "name": "name",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -123,6 +124,7 @@
         },
         "/api/v1/did/query_identity": {
             "get": {
+                "description": "通过didID来查询软件标识，传入指定的didID可以查询到该指定的文档，想要获取链上全部标识时，参数填“all”会返回所有标识。",
                 "consumes": [
                     "application/json"
                 ],
@@ -132,7 +134,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "didID",
+                        "description": "查询单个标识时传入该文档指定的didID，想要获取全部标识时，就直接传入参数“all”。 ",
                         "name": "did",
                         "in": "query",
                         "required": true
@@ -148,8 +150,37 @@
                 }
             }
         },
+        "/api/v1/did/remove_identity": {
+            "delete": {
+                "description": "通过表单数据来删除标识信息，注意是表单数据哦！！！",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "didID",
+                        "name": "didID",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/requestBase.ResponseBodyData"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/did/update_identity": {
             "put": {
+                "description": "通过传入结构体body数据来更新标识信息，注意这个结构体仅仅只是Document这一部分哦，这只是整个标识数据模型中的一部分，切记不要传入整个标识！！！",
                 "consumes": [
                     "application/json"
                 ],
