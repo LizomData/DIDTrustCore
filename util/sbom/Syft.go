@@ -15,7 +15,32 @@ import (
 
 const defaultImage = "alpine:3.19"
 
-func GenerateSbom(proPath string) {
+func GenerateSBOM(targetDir string, formatType string) ([]byte, error) {
+	// 获取输入源
+	src, err := syft.GetSource(context.Background(), targetDir, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get source: %v", err)
+	}
+
+	// 生成 SBOM
+	s, err := syft.CreateSBOM(context.Background(), src, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create SBOM: %v", err)
+	}
+
+	var bytes []byte
+	switch formatType {
+	case "spdx-json":
+		bytes = formatSBOM_spdx(*s)
+	case "cyclonedx-json":
+		bytes = formatSBOM_cdx(*s)
+	default:
+		bytes = formatSBOM_spdx(*s)
+	}
+	return bytes, nil
+}
+
+func GenerateSbom_test(proPath string) {
 	// automagically get a source.Source for arbitrary string input
 	//src := getSource(imageReference())
 	src := getSource(proPath)

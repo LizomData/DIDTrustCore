@@ -13,6 +13,10 @@ const (
 	IncorrectFormat
 	NotUser
 	NotPrivileged
+	NotFile
+	RepoFailed
+	InvalidType
+	SBOMFailed
 )
 const (
 	Success int = iota
