@@ -288,6 +288,13 @@ const docTemplate = `{
                 "summary": "生成SBOM接口",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "生成参数",
                         "name": "body",
                         "in": "body",
@@ -302,6 +309,47 @@ const docTemplate = `{
                         "description": "SBOM清单信息",
                         "schema": {
                             "$ref": "#/definitions/sbomController.GenerateSbomResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/sbom/query": {
+            "post": {
+                "description": "查找用户生成sbom历史记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SBOM管理"
+                ],
+                "summary": "查询SBOM接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/sbomController.QuerySBOMRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "SBOM记录",
+                        "schema": {
+                            "$ref": "#/definitions/sbomController.QuerySbomResult"
                         }
                     }
                 }
@@ -522,6 +570,28 @@ const docTemplate = `{
             "properties": {
                 "download_url": {
                     "description": "下载地址",
+                    "type": "string"
+                }
+            }
+        },
+        "sbomController.QuerySBOMRequest": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "description": "页面索引",
+                    "type": "integer"
+                },
+                "size": {
+                    "description": "页面大小",
+                    "type": "integer"
+                }
+            }
+        },
+        "sbomController.QuerySbomResult": {
+            "type": "object",
+            "properties": {
+                "sbomReports": {
+                    "description": "sbom记录",
                     "type": "string"
                 }
             }

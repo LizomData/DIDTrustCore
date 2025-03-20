@@ -1,0 +1,34 @@
+package sbomController
+
+import (
+	"DIDTrustCore/common"
+	"DIDTrustCore/model/requestBase"
+	"fmt"
+	"github.com/gin-gonic/gin"
+)
+
+// @Summary 查询SBOM接口
+// @Description 查找用户生成sbom历史记录
+// @Tags SBOM管理
+// @Accept json
+// @Produce json
+// @Param Authorization	header		string	true	"jwt"
+// @Param body body QuerySBOMRequest true "查询参数"
+// @Success 200 {object} QuerySbomResult "SBOM记录"
+// @Router /api/v1/sbom/query [post]
+func query(c *gin.Context) {
+	var req QuerySBOMRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(requestBase.ResponseBody(requestBase.ParameterError, "无效的请求参数,检查查询参数", gin.H{}))
+		return
+	}
+	user, _ := common.GetUserFromContext(c)
+	rs, err := sbom_svc.ListSBOMs(user.ID, req.Page, req.Size)
+	if err != nil {
+		c.JSON(requestBase.ResponseBody(requestBase.ParameterError, "查询错误"+err.Error(), gin.H{}))
+		return
+	}
+	fmt.Println(rs)
+	c.JSON(requestBase.ResponseBodySuccess(gin.H{"sbomReports": rs}))
+
+}

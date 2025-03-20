@@ -13,6 +13,7 @@ const (
 )
 
 var db = InitDb()
+var Sbom_repo = NewSBOMRepository(db)
 
 func InitDb() *gorm.DB {
 	// 连接数据库
@@ -27,46 +28,11 @@ func InitDb() *gorm.DB {
 		log.Fatalf("Failed to auto migrate: %v", err)
 	}
 
+	// 自动迁移表结构
+	err = db.AutoMigrate(&model.SBOMReport{})
+	if err != nil {
+		log.Fatalf("Failed to auto migrate: %v", err)
+	}
+
 	return db
-}
-
-// 创建用户
-func CreateUser(user model.User) error {
-	result := db.Create(&user)
-	return result.Error
-}
-
-// 查询用户
-func FindUser(username string) (bool, model.User) {
-	var user model.User
-	result := db.First(&user, "username = ?", username)
-	if result.Error != nil {
-		return false, user
-	}
-	return true, user
-
-}
-
-// 查询用户
-func FindUserById(userId uint) (bool, model.User) {
-	var user model.User
-	result := db.First(&user, "id = ?", userId)
-	if result.Error != nil {
-		return false, user
-	}
-	return true, user
-
-}
-
-// 更新用户
-func UpdateUser(user model.User) error {
-	result := db.Save(&user)
-	return result.Error
-}
-
-// 删除用户
-func DeleteUser(user model.User) error {
-	result := db.Delete(&user)
-	return result.Error
-
 }

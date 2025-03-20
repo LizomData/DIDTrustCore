@@ -1,6 +1,7 @@
 package sbomController
 
 import (
+	"DIDTrustCore/common"
 	"DIDTrustCore/controller/fileUploadController"
 	"DIDTrustCore/model/requestBase"
 	"DIDTrustCore/util/extractorCustom"
@@ -18,6 +19,7 @@ import (
 // @Tags SBOM管理
 // @Accept json
 // @Produce json
+// @Param Authorization	header		string	true	"jwt"
 // @Param body body GenerateSBOMRequest true "生成参数"
 // @Success 200 {object} GenerateSbomResult "SBOM清单信息"
 // @Router /api/v1/sbom/generate [post]
@@ -63,6 +65,7 @@ func generate(c *gin.Context) {
 	// 生成唯一文件名
 	sbomFilename := fmt.Sprintf("sbom_%d_%d.%s.json", time.Now().UnixNano(),
 		time.Now().Nanosecond(), strings.Split(req.Format, "-")[0])
+	download_url := fmt.Sprintf("%s%s", sbomGenerator.Config.PublicPath, sbomFilename)
 
 	// 保存到持久化存储
 	sbomPath := filepath.Join(sbomGenerator.Config.SBOMStorageDir, sbomFilename)
@@ -73,10 +76,19 @@ func generate(c *gin.Context) {
 			gin.H{}))
 		return
 	}
+	user, err := common.GetUserFromContext(c)
+	//保存到数据库,如果已经登陆了
+	if _, err := sbom_svc.GenerateSBOMRecord(user.ID, sbomFilename, download_url, req.Format); err != nil {
+		c.JSON(requestBase.ResponseBody(
+			requestBase.SBOMFailed,
+			"SBOM保存云端失败: "+err.Error(),
+			gin.H{}))
+		return
+	}
 
 	// 返回下载链接
 	c.JSON(requestBase.ResponseBodySuccess(gin.H{
-		"download_url": fmt.Sprintf("%s%s", sbomGenerator.Config.PublicPath, sbomFilename),
+		"download_url": download_url,
 	}))
 
 }

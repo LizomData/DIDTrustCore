@@ -17,6 +17,13 @@ type GenerateSBOMRequest struct {
 	Format  string `json:"format" enums:"spdx-json,cyclonedx-json,syft-json"`
 }
 
+type QuerySBOMRequest struct {
+	Page int `json:"page"` //页面索引
+	Size int `json:"size"` //页面大小
+}
 type GenerateSbomResult struct {
 	DownloadUrl string `json:"download_url"` // 下载地址
+}
+type QuerySbomResult struct {
+	SbomReports string `json:"sbomReports" example:{}` // sbom记录
 }

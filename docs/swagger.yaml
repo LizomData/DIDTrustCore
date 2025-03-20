@@ -107,6 +107,21 @@ definitions:
         description: 下载地址
         type: string
     type: object
+  sbomController.QuerySBOMRequest:
+    properties:
+      page:
+        description: 页面索引
+        type: integer
+      size:
+        description: 页面大小
+        type: integer
+    type: object
+  sbomController.QuerySbomResult:
+    properties:
+      sbomReports:
+        description: sbom记录
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -281,6 +296,11 @@ paths:
       - application/json
       description: 根据已上传的软件包生成SBOM文件
       parameters:
+      - description: jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 生成参数
         in: body
         name: body
@@ -295,6 +315,33 @@ paths:
           schema:
             $ref: '#/definitions/sbomController.GenerateSbomResult'
       summary: 生成SBOM接口
+      tags:
+      - SBOM管理
+  /api/v1/sbom/query:
+    post:
+      consumes:
+      - application/json
+      description: 查找用户生成sbom历史记录
+      parameters:
+      - description: jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/sbomController.QuerySBOMRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: SBOM记录
+          schema:
+            $ref: '#/definitions/sbomController.QuerySbomResult'
+      summary: 查询SBOM接口
       tags:
       - SBOM管理
   /api/v1/service/checkSoft:
