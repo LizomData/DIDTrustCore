@@ -2,58 +2,45 @@ package sbomController
 
 import (
 	"DIDTrustCore/controller/fileUploadController"
+	"DIDTrustCore/model/requestBase"
 	"DIDTrustCore/util/extractorCustom"
 	"DIDTrustCore/util/sbom"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
-type SBOMController struct {
-	uploadDir  string
-	publicPath string
-}
-
-// GenerateSBOMRequest 定义请求体结构
-type GenerateSBOMRequest struct {
-	FileURL string `json:"file_url"`
-	Format  string `json:"format" enums:"spdx-json,cyclonedx-json,syft-json"`
-}
-
-// GenerateSBOM 处理SBOM生成请求
+// @Summary 生成SBOM接口
+// @Description 根据已上传的软件包生成SBOM文件
+// @Tags SBOM管理
+// @Accept json
+// @Produce json
+// @Param body body GenerateSBOMRequest true "生成参数"
+// @Success 200 {object} GenerateSbomResult "SBOM清单信息"
+// @Router /api/v1/sbom/generate [post]
 func generate(c *gin.Context) {
 	var req GenerateSBOMRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    40010,
-			"message": "无效的请求参数: " + err.Error(),
-		})
+		c.JSON(requestBase.ResponseBody(requestBase.ParameterError, "无效的请求参数,检查软件包路径", gin.H{}))
 		return
 	}
 
 	// 验证并解析文件URL
 	filename, err := validateFileURL(req.FileURL)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    40011,
-			"message": "文件URL无效: " + err.Error(),
-		})
+		c.JSON(requestBase.ResponseBody(requestBase.FileNotFound, "文件URL无效,检查软件包路径", gin.H{}))
 		return
 	}
 
 	// 获取本地文件路径
 	filePath := filepath.Join(fileUploadController.Uploader.Config.UploadDir, filename)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		c.JSON(http.StatusNotFound, gin.H{
-			"code":    40401,
-			"message": "文件不存在",
-		})
+		c.JSON(requestBase.ResponseBody(requestBase.FileNotFound, "软件包不存在,检查软件包上传状态", gin.H{}))
 		return
 	}
-	fmt.Println(filePath)
 
 	// 创建解压器实例
 	extractor := extractorCustom.Extractor{}
@@ -61,10 +48,7 @@ func generate(c *gin.Context) {
 	// 解压文件到临时目录
 	extractDir, err := extractor.Extract(filePath)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    40012,
-			"message": "文件解压失败: " + err.Error(),
-		})
+		c.JSON(requestBase.ResponseBody(requestBase.FileUnzipFailed, "软件包解压失败,检查软件包上传状态", gin.H{}))
 		return
 	}
 	defer os.RemoveAll(extractDir) // 确保清理临时目录
@@ -72,13 +56,28 @@ func generate(c *gin.Context) {
 	// 生成SBOM（使用解压后的目录）
 	sbomBytes, err := sbom.GenerateSBOM(extractDir, req.Format)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"code":    50001,
-			"message": "SBOM生成失败: " + err.Error(),
-		})
+		c.JSON(requestBase.ResponseBody(requestBase.SBOMFailed, "SBOM生成失败", gin.H{}))
 		return
 	}
-	c.Data(http.StatusOK, "application/json", sbomBytes)
+
+	// 生成唯一文件名
+	sbomFilename := fmt.Sprintf("sbom_%d_%d.%s.json", time.Now().UnixNano(),
+		time.Now().Nanosecond(), strings.Split(req.Format, "-")[0])
+
+	// 保存到持久化存储
+	sbomPath := filepath.Join(sbomGenerator.Config.SBOMStorageDir, sbomFilename)
+	if err := os.WriteFile(sbomPath, sbomBytes, 0644); err != nil {
+		c.JSON(requestBase.ResponseBody(
+			requestBase.SBOMFailed,
+			"SBOM生成失败: "+err.Error(),
+			gin.H{}))
+		return
+	}
+
+	// 返回下载链接
+	c.JSON(requestBase.ResponseBodySuccess(gin.H{
+		"download_url": fmt.Sprintf("%s%s", sbomGenerator.Config.PublicPath, sbomFilename),
+	}))
 
 }
 

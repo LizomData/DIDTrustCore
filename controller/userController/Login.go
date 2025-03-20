@@ -10,6 +10,7 @@ import (
 // @Summary 用户登陆
 // @Accept       json
 // @Produce      json
+// @Tags 用户管理
 // @Param  body body model.User true "登录凭证"
 // @Success 200 {object} requestBase.ResponseBodyData "成功"
 // @Router /api/v1/account/login [post]

@@ -1,45 +1,47 @@
 package fileUploadController
 
 import (
+	"DIDTrustCore/model/requestBase"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io"
 	"mime/multipart"
-	"net/http"
 	"os"
 	"path/filepath"
 	"time"
 )
 
+// 文件上传接口
+// @Summary 上传文件
+// @Description 上传软件包压缩包到服务器并返回访问地址,支持.zip和.tar.gz格式压缩包,格式采用multipart/form-data,字段为file
+// @Tags 文件管理
+// @Accept multipart/form-data
+// @Produce json
+// @Param file formData file true "选择要上传的文件"
+// @Success 200 {object} UploadResult "上传成功"
+// @Router /api/v1/file/upload [post]
 func upload(c *gin.Context) {
 
 	// 获取上传文件
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "请选择上传文件",
-		})
+		c.JSON(requestBase.ResponseBody(requestBase.FileNotFound, "请选择上传文件", gin.H{}))
 		return
 	}
 
 	// 调用上传模块
 	result, err := Uploader.UploadFile(fileHeader)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(requestBase.ResponseBody(requestBase.UploadFailed, "上传文件失败"+err.Error(), gin.H{}))
 		return
 	}
 
 	// 返回成功响应
-	c.JSON(http.StatusOK, gin.H{
-		"code": 0,
-		"data": gin.H{
-			"url":  result.PublicURL,
-			"name": result.FileName,
-			"size": result.FileSize,
-		},
-	})
+	c.JSON(requestBase.ResponseBodySuccess(gin.H{
+		"url":  result.PublicURL,
+		"name": result.FileName,
+		"size": result.FileSize,
+	}))
 
 }
 

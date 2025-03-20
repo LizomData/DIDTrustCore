@@ -5,9 +5,9 @@ import (
 )
 
 type ResponseBodyData struct {
-	Code int            `json:"code" example:0`
-	Msg  string         `json:"msg" example:"成功"`
-	Data map[string]any `json:"data"`
+	Code int            `json:"code" example:0`   //返回的状态码
+	Msg  string         `json:"msg" example:"成功"` //返回的具体信息
+	Data map[string]any `json:"data" example:{}`  //返回数据
 }
 
 func ResponseBodyBase() (int, gin.H) {

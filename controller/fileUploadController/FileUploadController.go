@@ -9,7 +9,6 @@ func Routers(e *gin.Engine) {
 	// 暴露静态文件目录
 	e.Static(Uploader.Config.PublicPath, Uploader.Config.UploadDir)
 
-	// 文件上传接口
 	group := e.Group("/api/v1/file")
 	group.Use()
 	{

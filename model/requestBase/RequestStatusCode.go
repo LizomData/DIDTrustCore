@@ -17,6 +17,9 @@ const (
 	RepoFailed
 	InvalidType
 	SBOMFailed
+	FileUnzipFailed
+	FileNotFound
+	UploadFailed
 )
 const (
 	Success int = iota
