@@ -1,16 +1,4 @@
 definitions:
-  fileUploadController.UploadResult:
-    properties:
-      fileName:
-        description: 存储的文件名
-        type: string
-      fileSize:
-        description: 文件大小(字节)
-        type: integer
-      publicURL:
-        description: 公开访问地址
-        type: string
-    type: object
   model.Authentication:
     properties:
       created:
@@ -44,6 +32,53 @@ definitions:
         type: string
       verificationMethod:
         $ref: '#/definitions/model.VerificationMethod'
+    type: object
+  model.PkgRecord:
+    properties:
+      created_at:
+        type: string
+      download_url:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: integer
+      pkg_filename:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.SBOMReport:
+    properties:
+      created_at:
+        type: string
+      download_url:
+        type: string
+      expires_at:
+        type: string
+      format:
+        type: string
+      id:
+        type: integer
+      sbom_filename:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.ScanReport:
+    properties:
+      created_at:
+        type: string
+      download_url:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: integer
+      scanResultFilename:
+        type: string
+      updated_at:
+        type: string
     type: object
   model.Service:
     properties:
@@ -101,26 +136,11 @@ definitions:
         - syft-json
         type: string
     type: object
-  sbomController.GenerateSbomResult:
-    properties:
-      download_url:
-        description: 下载地址
-        type: string
-    type: object
   sbomController.QuerySBOMRequest:
     properties:
-      page:
+      sbomReportId:
         description: 页面索引
         type: integer
-      size:
-        description: 页面大小
-        type: integer
-    type: object
-  sbomController.QuerySbomResult:
-    properties:
-      sbomReports:
-        description: sbom记录
-        type: string
     type: object
   vulnerabilityScanningController.QueryRequest:
     properties:
@@ -128,23 +148,11 @@ definitions:
         description: 查询分析报告的id
         type: integer
     type: object
-  vulnerabilityScanningController.QueryResponse:
-    properties:
-      report_url:
-        description: 返回报告下载链接
-        type: string
-    type: object
   vulnerabilityScanningController.ScanRequest:
     properties:
       sbomReportId:
         description: 生成sbom后返回的id
         type: integer
-    type: object
-  vulnerabilityScanningController.ScanResponse:
-    properties:
-      result_url:
-        description: 结果链接
-        type: string
     type: object
 info:
   contact: {}
@@ -293,7 +301,7 @@ paths:
             $ref: '#/definitions/requestBase.ResponseBodyData'
       tags:
       - did身份标识管理
-  /api/v1/file/upload:
+  /api/v1/pkg/upload:
     post:
       consumes:
       - multipart/form-data
@@ -310,10 +318,10 @@ paths:
         "200":
           description: 上传成功
           schema:
-            $ref: '#/definitions/fileUploadController.UploadResult'
+            $ref: '#/definitions/model.PkgRecord'
       summary: 上传文件
       tags:
-      - 文件管理
+      - 软件包管理
   /api/v1/sbom/generate:
     post:
       consumes:
@@ -337,7 +345,7 @@ paths:
         "200":
           description: SBOM清单信息
           schema:
-            $ref: '#/definitions/sbomController.GenerateSbomResult'
+            $ref: '#/definitions/model.SBOMReport'
       summary: 生成SBOM接口
       tags:
       - SBOM管理
@@ -364,7 +372,7 @@ paths:
         "200":
           description: SBOM记录
           schema:
-            $ref: '#/definitions/sbomController.QuerySbomResult'
+            $ref: '#/definitions/model.SBOMReport'
       summary: 查询SBOM接口
       tags:
       - SBOM管理
@@ -391,7 +399,7 @@ paths:
         "200":
           description: 报告信息
           schema:
-            $ref: '#/definitions/vulnerabilityScanningController.QueryResponse'
+            $ref: '#/definitions/model.ScanReport'
       summary: 查询已经分析的报告
       tags:
       - 漏洞分析
@@ -418,7 +426,7 @@ paths:
         "200":
           description: SBOM清单信息
           schema:
-            $ref: '#/definitions/vulnerabilityScanningController.ScanResponse'
+            $ref: '#/definitions/model.ScanReport'
       summary: 生成分析漏洞接口
       tags:
       - 漏洞分析

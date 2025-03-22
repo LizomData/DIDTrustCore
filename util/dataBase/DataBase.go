@@ -40,5 +40,11 @@ func InitDb() *gorm.DB {
 		log.Fatalf("Failed to auto migrate: %v", err)
 	}
 
+	// 自动迁移表结构
+	err = db.AutoMigrate(&model.PkgRecord{})
+	if err != nil {
+		log.Fatalf("Failed to auto migrate: %v", err)
+	}
+
 	return db
 }

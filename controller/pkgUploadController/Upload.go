@@ -1,7 +1,9 @@
-package fileUploadController
+package pkgUploadController
 
 import (
+	"DIDTrustCore/common"
 	"DIDTrustCore/model/requestBase"
+	pkgDB "DIDTrustCore/util/dataBase/pkgDb"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io"
@@ -14,12 +16,12 @@ import (
 // 文件上传接口
 // @Summary 上传文件
 // @Description 上传软件包压缩包到服务器并返回访问地址,支持.zip和.tar.gz格式压缩包,格式采用multipart/form-data,字段为file
-// @Tags 文件管理
+// @Tags 软件包管理
 // @Accept multipart/form-data
 // @Produce json
 // @Param file formData file true "选择要上传的文件"
-// @Success 200 {object} UploadResult "上传成功"
-// @Router /api/v1/file/upload [post]
+// @Success 200 {object} model.PkgRecord "上传成功"
+// @Router /api/v1/pkg/upload [post]
 func upload(c *gin.Context) {
 
 	// 获取上传文件
@@ -36,12 +38,16 @@ func upload(c *gin.Context) {
 		return
 	}
 
+	//保存上传记录
+	user, _ := common.GetUserFromContext(c)
+	record, err := pkgDB.Svc.CreateRecord(user.ID, result.FileName, result.PublicURL)
+	if err != nil {
+		c.JSON(requestBase.ResponseBody(requestBase.UploadFailed, "上传文件失败"+err.Error(), gin.H{}))
+		return
+	}
+
 	// 返回成功响应
-	c.JSON(requestBase.ResponseBodySuccess(gin.H{
-		"url":  result.PublicURL,
-		"name": result.FileName,
-		"size": result.FileSize,
-	}))
+	c.JSON(requestBase.ResponseBodySuccess(record))
 
 }
 

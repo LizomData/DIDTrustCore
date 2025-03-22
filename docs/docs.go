@@ -241,7 +241,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/file/upload": {
+        "/api/v1/pkg/upload": {
             "post": {
                 "description": "上传软件包压缩包到服务器并返回访问地址,支持.zip和.tar.gz格式压缩包,格式采用multipart/form-data,字段为file",
                 "consumes": [
@@ -251,7 +251,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "文件管理"
+                    "软件包管理"
                 ],
                 "summary": "上传文件",
                 "parameters": [
@@ -267,7 +267,7 @@ const docTemplate = `{
                     "200": {
                         "description": "上传成功",
                         "schema": {
-                            "$ref": "#/definitions/fileUploadController.UploadResult"
+                            "$ref": "#/definitions/model.PkgRecord"
                         }
                     }
                 }
@@ -308,7 +308,7 @@ const docTemplate = `{
                     "200": {
                         "description": "SBOM清单信息",
                         "schema": {
-                            "$ref": "#/definitions/sbomController.GenerateSbomResult"
+                            "$ref": "#/definitions/model.SBOMReport"
                         }
                     }
                 }
@@ -349,7 +349,7 @@ const docTemplate = `{
                     "200": {
                         "description": "SBOM记录",
                         "schema": {
-                            "$ref": "#/definitions/sbomController.QuerySbomResult"
+                            "$ref": "#/definitions/model.SBOMReport"
                         }
                     }
                 }
@@ -390,7 +390,7 @@ const docTemplate = `{
                     "200": {
                         "description": "报告信息",
                         "schema": {
-                            "$ref": "#/definitions/vulnerabilityScanningController.QueryResponse"
+                            "$ref": "#/definitions/model.ScanReport"
                         }
                     }
                 }
@@ -431,7 +431,7 @@ const docTemplate = `{
                     "200": {
                         "description": "SBOM清单信息",
                         "schema": {
-                            "$ref": "#/definitions/vulnerabilityScanningController.ScanResponse"
+                            "$ref": "#/definitions/model.ScanReport"
                         }
                     }
                 }
@@ -439,23 +439,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "fileUploadController.UploadResult": {
-            "type": "object",
-            "properties": {
-                "fileName": {
-                    "description": "存储的文件名",
-                    "type": "string"
-                },
-                "fileSize": {
-                    "description": "文件大小(字节)",
-                    "type": "integer"
-                },
-                "publicURL": {
-                    "description": "公开访问地址",
-                    "type": "string"
-                }
-            }
-        },
         "model.Authentication": {
             "type": "object",
             "properties": {
@@ -505,6 +488,78 @@ const docTemplate = `{
                 },
                 "verificationMethod": {
                     "$ref": "#/definitions/model.VerificationMethod"
+                }
+            }
+        },
+        "model.PkgRecord": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "download_url": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "pkg_filename": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SBOMReport": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "download_url": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "sbom_filename": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ScanReport": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "download_url": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "scanResultFilename": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -591,34 +646,12 @@ const docTemplate = `{
                 }
             }
         },
-        "sbomController.GenerateSbomResult": {
-            "type": "object",
-            "properties": {
-                "download_url": {
-                    "description": "下载地址",
-                    "type": "string"
-                }
-            }
-        },
         "sbomController.QuerySBOMRequest": {
             "type": "object",
             "properties": {
-                "page": {
+                "sbomReportId": {
                     "description": "页面索引",
                     "type": "integer"
-                },
-                "size": {
-                    "description": "页面大小",
-                    "type": "integer"
-                }
-            }
-        },
-        "sbomController.QuerySbomResult": {
-            "type": "object",
-            "properties": {
-                "sbomReports": {
-                    "description": "sbom记录",
-                    "type": "string"
                 }
             }
         },
@@ -631,30 +664,12 @@ const docTemplate = `{
                 }
             }
         },
-        "vulnerabilityScanningController.QueryResponse": {
-            "type": "object",
-            "properties": {
-                "report_url": {
-                    "description": "返回报告下载链接",
-                    "type": "string"
-                }
-            }
-        },
         "vulnerabilityScanningController.ScanRequest": {
             "type": "object",
             "properties": {
                 "sbomReportId": {
                     "description": "生成sbom后返回的id",
                     "type": "integer"
-                }
-            }
-        },
-        "vulnerabilityScanningController.ScanResponse": {
-            "type": "object",
-            "properties": {
-                "result_url": {
-                    "description": "结果链接",
-                    "type": "string"
                 }
             }
         }

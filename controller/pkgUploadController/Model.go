@@ -1,4 +1,4 @@
-package fileUploadController
+package pkgUploadController
 
 // 上传结果结构体
 type UploadResult struct {

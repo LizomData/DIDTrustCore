@@ -2,7 +2,7 @@ package sbomController
 
 import (
 	"DIDTrustCore/common"
-	"DIDTrustCore/controller/fileUploadController"
+	"DIDTrustCore/controller/pkgUploadController"
 	"DIDTrustCore/model/requestBase"
 	"DIDTrustCore/util/dataBase"
 	"DIDTrustCore/util/extractorCustom"
@@ -22,7 +22,7 @@ import (
 // @Produce json
 // @Param Authorization	header		string	true	"jwt"
 // @Param body body GenerateSBOMRequest true "生成参数"
-// @Success 200 {object} GenerateSbomResult "SBOM清单信息"
+// @Success 200 {object} model.SBOMReport "SBOM清单信息"
 // @Router /api/v1/sbom/generate [post]
 func generate(c *gin.Context) {
 	var req GenerateSBOMRequest
@@ -39,7 +39,7 @@ func generate(c *gin.Context) {
 	}
 
 	// 获取本地文件路径
-	filePath := filepath.Join(fileUploadController.Uploader.Config.UploadDir, filename)
+	filePath := filepath.Join(pkgUploadController.Uploader.Config.UploadDir, filename)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		c.JSON(requestBase.ResponseBody(requestBase.FileNotFound, "软件包不存在,检查软件包上传状态", gin.H{}))
 		return
@@ -78,8 +78,9 @@ func generate(c *gin.Context) {
 		return
 	}
 	user, err := common.GetUserFromContext(c)
+	record, err := dataBase.Sbom_svc.GenerateSBOMRecord(user.ID, sbomFilename, download_url, req.Format)
 	//保存到数据库,如果已经登陆了
-	if _, err := dataBase.Sbom_svc.GenerateSBOMRecord(user.ID, sbomFilename, download_url, req.Format); err != nil {
+	if err != nil {
 		c.JSON(requestBase.ResponseBody(
 			requestBase.SBOMFailed,
 			"SBOM保存云端失败: "+err.Error(),
@@ -87,19 +88,16 @@ func generate(c *gin.Context) {
 		return
 	}
 
-	// 返回下载链接
-	c.JSON(requestBase.ResponseBodySuccess(gin.H{
-		"download_url": download_url,
-	}))
+	c.JSON(requestBase.ResponseBodySuccess(record))
 
 }
 
 // 验证文件URL并提取文件名
 func validateFileURL(url string) (string, error) {
-	if !strings.HasPrefix(url, fileUploadController.Uploader.Config.PublicPath) {
+	if !strings.HasPrefix(url, pkgUploadController.Uploader.Config.PublicPath) {
 		return "", fmt.Errorf("非法的文件路径")
 	}
-	filename := strings.TrimPrefix(url, fileUploadController.Uploader.Config.PublicPath)
+	filename := strings.TrimPrefix(url, pkgUploadController.Uploader.Config.PublicPath)
 	if filename == "" || strings.Contains(filename, "..") {
 		return "", fmt.Errorf("无效的文件名")
 	}

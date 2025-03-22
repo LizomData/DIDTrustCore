@@ -1,10 +1,8 @@
 package sbomController
 
 import (
-	"DIDTrustCore/common"
 	"DIDTrustCore/model/requestBase"
 	"DIDTrustCore/util/dataBase"
-	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,7 +13,7 @@ import (
 // @Produce json
 // @Param Authorization	header		string	true	"jwt"
 // @Param body body QuerySBOMRequest true "查询参数"
-// @Success 200 {object} QuerySbomResult "SBOM记录"
+// @Success 200 {object} model.SBOMReport "SBOM记录"
 // @Router /api/v1/sbom/query [post]
 func query(c *gin.Context) {
 	var req QuerySBOMRequest
@@ -23,13 +21,10 @@ func query(c *gin.Context) {
 		c.JSON(requestBase.ResponseBody(requestBase.ParameterError, "无效的请求参数,检查查询参数", gin.H{}))
 		return
 	}
-	user, _ := common.GetUserFromContext(c)
-	rs, err := dataBase.Sbom_svc.ListSBOMs(user.ID, req.Page, req.Size)
+	record, err := dataBase.Sbom_svc.GetSBOMByID(req.SbomReportId)
 	if err != nil {
 		c.JSON(requestBase.ResponseBody(requestBase.ParameterError, "查询错误"+err.Error(), gin.H{}))
 		return
 	}
-	fmt.Println(rs)
-	c.JSON(requestBase.ResponseBodySuccess(gin.H{"sbomReports": rs}))
-
+	c.JSON(requestBase.ResponseBodySuccess(record))
 }

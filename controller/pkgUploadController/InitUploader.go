@@ -1,4 +1,4 @@
-package fileUploadController
+package pkgUploadController
 
 import (
 	"fmt"
