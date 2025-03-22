@@ -20,7 +20,7 @@ func (s *ScanReportDbService) CreateRecord(userid uint, filename, download_url s
 		UserID:             userid,
 		ScanResultFilename: filename,
 		DownloadURL:        download_url,
-		ExpiresAt:          time.Now().Add(24 * time.Hour),
+		ExpiresAt:          time.Now().Unix() + 24*3600,
 	}
 
 	if err := s.repo.Create(report); err != nil {

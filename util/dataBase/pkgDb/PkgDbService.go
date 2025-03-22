@@ -20,7 +20,7 @@ func (s *PkgDbService) CreateRecord(userid uint, filename, download_url string) 
 		UserID:      userid,
 		PkgFilename: filename,
 		DownloadURL: download_url,
-		ExpiresAt:   time.Now().Add(24 * time.Hour),
+		ExpiresAt:   time.Now().Unix() + 24*3600,
 	}
 
 	if err := s.repo.Create(record); err != nil {

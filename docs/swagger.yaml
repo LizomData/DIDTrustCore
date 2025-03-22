@@ -36,49 +36,43 @@ definitions:
   model.PkgRecord:
     properties:
       created_at:
-        type: string
+        type: integer
       download_url:
         type: string
-      expires_at:
-        type: string
-      id:
-        type: integer
       pkg_filename:
         type: string
+      pkgRecordId:
+        type: integer
       updated_at:
-        type: string
+        type: integer
     type: object
   model.SBOMReport:
     properties:
       created_at:
-        type: string
+        type: integer
       download_url:
-        type: string
-      expires_at:
         type: string
       format:
         type: string
-      id:
-        type: integer
       sbom_filename:
         type: string
+      sbomReportId:
+        type: integer
       updated_at:
-        type: string
+        type: integer
     type: object
   model.ScanReport:
     properties:
       created_at:
-        type: string
+        type: integer
       download_url:
         type: string
-      expires_at:
-        type: string
-      id:
+      scanReportId:
         type: integer
       scanResultFilename:
         type: string
       updated_at:
-        type: string
+        type: integer
     type: object
   model.Service:
     properties:

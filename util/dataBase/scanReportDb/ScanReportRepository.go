@@ -5,6 +5,7 @@ import (
 	"DIDTrustCore/util/dataBase"
 	"errors"
 	"gorm.io/gorm"
+	"time"
 )
 
 var scanReportRepo = NewScanReportRepository(dataBase.Db)
@@ -24,6 +25,8 @@ func (r *ScanReportRepo) Create(report *model.ScanReport) error {
 		if report.UserID == 0 || report.DownloadURL == "" {
 			return errors.New("missing required fields")
 		}
+		report.CreatedAt = time.Now().Unix()
+		report.UpdatedAt = time.Now().Unix()
 		return tx.Create(report).Error
 	})
 }

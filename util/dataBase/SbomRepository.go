@@ -4,6 +4,7 @@ import (
 	"DIDTrustCore/model"
 	"errors"
 	"gorm.io/gorm"
+	"time"
 )
 
 type SbomRepo struct {
@@ -21,6 +22,8 @@ func (r *SbomRepo) Create(report *model.SBOMReport) error {
 		if report.UserID == 0 || report.DownloadURL == "" {
 			return errors.New("missing required fields")
 		}
+		report.CreatedAt = time.Now().Unix()
+		report.UpdatedAt = time.Now().Unix()
 		return tx.Create(report).Error
 	})
 }

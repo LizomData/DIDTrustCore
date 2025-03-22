@@ -5,6 +5,7 @@ import (
 	"DIDTrustCore/util/dataBase"
 	"errors"
 	"gorm.io/gorm"
+	"time"
 )
 
 var pkgRepo = NewPkgRepository(dataBase.Db)
@@ -24,6 +25,8 @@ func (r *PkgRepo) Create(record *model.PkgRecord) error {
 		if record.UserID == 0 || record.DownloadURL == "" {
 			return errors.New("missing required fields")
 		}
+		record.CreatedAt = time.Now().Unix()
+		record.UpdatedAt = time.Now().Unix()
 		return tx.Create(record).Error
 	})
 }

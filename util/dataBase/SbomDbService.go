@@ -21,7 +21,7 @@ func (s *sbomService) GenerateSBOMRecord(userid uint, filename, url, format stri
 		SBOMFilename: filename,
 		DownloadURL:  url,
 		Format:       format,
-		ExpiresAt:    time.Now().Add(24 * time.Hour),
+		ExpiresAt:    time.Now().Unix() + 24*3600,
 	}
 
 	if err := s.repo.Create(report); err != nil {

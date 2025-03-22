@@ -495,22 +495,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "download_url": {
                     "type": "string"
                 },
-                "expires_at": {
-                    "type": "string"
-                },
-                "id": {
+                "pkgRecordId": {
                     "type": "integer"
                 },
                 "pkg_filename": {
                     "type": "string"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -518,25 +515,22 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "download_url": {
-                    "type": "string"
-                },
-                "expires_at": {
                     "type": "string"
                 },
                 "format": {
                     "type": "string"
                 },
-                "id": {
+                "sbomReportId": {
                     "type": "integer"
                 },
                 "sbom_filename": {
                     "type": "string"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -544,22 +538,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "download_url": {
                     "type": "string"
                 },
-                "expires_at": {
-                    "type": "string"
-                },
-                "id": {
+                "scanReportId": {
                     "type": "integer"
                 },
                 "scanResultFilename": {
                     "type": "string"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
