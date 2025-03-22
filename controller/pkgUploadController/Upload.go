@@ -34,15 +34,19 @@ func upload(c *gin.Context) {
 	// 调用上传模块
 	result, err := Uploader.UploadFile(fileHeader)
 	if err != nil {
-		c.JSON(requestBase.ResponseBody(requestBase.UploadFailed, "上传文件失败"+err.Error(), gin.H{}))
+		c.JSON(requestBase.ResponseBody(requestBase.UploadFailed, "上传文件失败:"+err.Error(), gin.H{}))
 		return
 	}
 
+	user, err := common.GetUserFromContext(c)
+	if err != nil {
+		c.JSON(requestBase.ResponseBody(requestBase.UploadFailed, "获取用户id失败:"+err.Error(), gin.H{}))
+		return
+	}
 	//保存上传记录
-	user, _ := common.GetUserFromContext(c)
 	record, err := pkgDB.Svc.CreateRecord(user.ID, result.FileName, result.PublicURL)
 	if err != nil {
-		c.JSON(requestBase.ResponseBody(requestBase.UploadFailed, "上传文件失败"+err.Error(), gin.H{}))
+		c.JSON(requestBase.ResponseBody(requestBase.UploadFailed, "保存上传文件记录失败:"+err.Error(), gin.H{}))
 		return
 	}
 

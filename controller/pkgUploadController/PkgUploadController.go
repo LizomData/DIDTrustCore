@@ -1,6 +1,7 @@
 package pkgUploadController
 
 import (
+	"DIDTrustCore/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,7 +11,7 @@ func Routers(e *gin.Engine) {
 	e.Static(Uploader.Config.PublicPath, Uploader.Config.UploadDir)
 
 	group := e.Group("/api/v1/pkg")
-	group.Use()
+	group.Use(util.AuthMiddleware())
 	{
 		group.POST("/upload", upload)
 	}
