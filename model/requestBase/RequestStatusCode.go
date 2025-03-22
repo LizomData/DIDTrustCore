@@ -20,6 +20,8 @@ const (
 	FileUnzipFailed
 	FileNotFound
 	UploadFailed
+	NotSbomReport
+	NotFoundReport
 )
 const (
 	Success int = iota

@@ -4,6 +4,7 @@ import (
 	"DIDTrustCore/common"
 	"DIDTrustCore/controller/fileUploadController"
 	"DIDTrustCore/model/requestBase"
+	"DIDTrustCore/util/dataBase"
 	"DIDTrustCore/util/extractorCustom"
 	"DIDTrustCore/util/sbom"
 	"fmt"
@@ -65,10 +66,10 @@ func generate(c *gin.Context) {
 	// 生成唯一文件名
 	sbomFilename := fmt.Sprintf("sbom_%d_%d.%s.json", time.Now().UnixNano(),
 		time.Now().Nanosecond(), strings.Split(req.Format, "-")[0])
-	download_url := fmt.Sprintf("%s%s", sbomGenerator.Config.PublicPath, sbomFilename)
+	download_url := fmt.Sprintf("%s%s", Generator.Config.PublicPath, sbomFilename)
 
 	// 保存到持久化存储
-	sbomPath := filepath.Join(sbomGenerator.Config.SBOMStorageDir, sbomFilename)
+	sbomPath := filepath.Join(Generator.Config.SBOMStorageDir, sbomFilename)
 	if err := os.WriteFile(sbomPath, sbomBytes, 0644); err != nil {
 		c.JSON(requestBase.ResponseBody(
 			requestBase.SBOMFailed,
@@ -78,7 +79,7 @@ func generate(c *gin.Context) {
 	}
 	user, err := common.GetUserFromContext(c)
 	//保存到数据库,如果已经登陆了
-	if _, err := sbom_svc.GenerateSBOMRecord(user.ID, sbomFilename, download_url, req.Format); err != nil {
+	if _, err := dataBase.Sbom_svc.GenerateSBOMRecord(user.ID, sbomFilename, download_url, req.Format); err != nil {
 		c.JSON(requestBase.ResponseBody(
 			requestBase.SBOMFailed,
 			"SBOM保存云端失败: "+err.Error(),

@@ -12,8 +12,8 @@ const (
 	dsn = "person1:123456@tcp(47.119.184.223:3306)/DIDTrustCore?charset=utf8mb4&parseTime=True&loc=Local"
 )
 
-var db = InitDb()
-var Sbom_repo = NewSBOMRepository(db)
+var Db = InitDb()
+var Sbom_repo = NewSBOMRepository(Db)
 
 func InitDb() *gorm.DB {
 	// 连接数据库
@@ -30,6 +30,12 @@ func InitDb() *gorm.DB {
 
 	// 自动迁移表结构
 	err = db.AutoMigrate(&model.SBOMReport{})
+	if err != nil {
+		log.Fatalf("Failed to auto migrate: %v", err)
+	}
+
+	// 自动迁移表结构
+	err = db.AutoMigrate(&model.ScanReport{})
 	if err != nil {
 		log.Fatalf("Failed to auto migrate: %v", err)
 	}

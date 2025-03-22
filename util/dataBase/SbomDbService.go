@@ -1,18 +1,17 @@
-package sbomController
+package dataBase
 
 import (
 	"DIDTrustCore/model"
-	"DIDTrustCore/util/dataBase"
 	"time"
 )
 
-var sbom_svc = NewSBOMManager(*dataBase.Sbom_repo)
+var Sbom_svc = NewSBOMManager(*Sbom_repo)
 
 type sbomService struct {
-	repo dataBase.SbomRepo
+	repo SbomRepo
 }
 
-func NewSBOMManager(repo dataBase.SbomRepo) *sbomService {
+func NewSBOMManager(repo SbomRepo) *sbomService {
 	return &sbomService{repo: repo}
 }
 

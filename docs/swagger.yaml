@@ -122,6 +122,30 @@ definitions:
         description: sbom记录
         type: string
     type: object
+  vulnerabilityScanningController.QueryRequest:
+    properties:
+      scanReportId:
+        description: 查询分析报告的id
+        type: integer
+    type: object
+  vulnerabilityScanningController.QueryResponse:
+    properties:
+      report_url:
+        description: 返回报告下载链接
+        type: string
+    type: object
+  vulnerabilityScanningController.ScanRequest:
+    properties:
+      sbomReportId:
+        description: 生成sbom后返回的id
+        type: integer
+    type: object
+  vulnerabilityScanningController.ScanResponse:
+    properties:
+      result_url:
+        description: 结果链接
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -344,40 +368,58 @@ paths:
       summary: 查询SBOM接口
       tags:
       - SBOM管理
-  /api/v1/service/checkSoft:
+  /api/v1/vulnerability/query:
     post:
       consumes:
       - application/json
+      description: 根据分析报告id查询
       parameters:
       - description: jwt
         in: header
         name: Authorization
         required: true
         type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/vulnerabilityScanningController.QueryRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: 成功
+          description: 报告信息
           schema:
-            $ref: '#/definitions/requestBase.ResponseBodyData'
-      summary: 功能api
-  /api/v1/service/checkSoftV2:
+            $ref: '#/definitions/vulnerabilityScanningController.QueryResponse'
+      summary: 查询已经分析的报告
+      tags:
+      - 漏洞分析
+  /api/v1/vulnerability/scan:
     post:
       consumes:
       - application/json
+      description: 根据已经生成的sbom生成漏洞分析报告
       parameters:
       - description: jwt
         in: header
         name: Authorization
         required: true
         type: string
+      - description: 分析参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/vulnerabilityScanningController.ScanRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: 成功
+          description: SBOM清单信息
           schema:
-            $ref: '#/definitions/requestBase.ResponseBodyData'
-      summary: 功能api2
+            $ref: '#/definitions/vulnerabilityScanningController.ScanResponse'
+      summary: 生成分析漏洞接口
+      tags:
+      - 漏洞分析
 swagger: "2.0"

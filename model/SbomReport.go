@@ -3,7 +3,7 @@ package model
 import "time"
 
 type SBOMReport struct {
-	ID           uint      `gorm:"primaryKey;comment:主键UUID" json:"-"`
+	ID           uint      `gorm:"primaryKey;comment:主键UUID" json:"id"`
 	UserID       uint      `gorm:"not null;index:idx_user;comment:关联用户ID" json:"-"`
 	SBOMFilename string    `gorm:"size:255;uniqueIndex:unq_sbom_file;comment:SBOM文件名" json:"sbom_filename"`
 	DownloadURL  string    `gorm:"type:varchar(1024);not null;comment:下载地址" json:"download_url"`

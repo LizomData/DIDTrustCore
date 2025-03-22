@@ -3,6 +3,7 @@ package sbomController
 import (
 	"DIDTrustCore/common"
 	"DIDTrustCore/model/requestBase"
+	"DIDTrustCore/util/dataBase"
 	"fmt"
 	"github.com/gin-gonic/gin"
 )
@@ -23,7 +24,7 @@ func query(c *gin.Context) {
 		return
 	}
 	user, _ := common.GetUserFromContext(c)
-	rs, err := sbom_svc.ListSBOMs(user.ID, req.Page, req.Size)
+	rs, err := dataBase.Sbom_svc.ListSBOMs(user.ID, req.Page, req.Size)
 	if err != nil {
 		c.JSON(requestBase.ResponseBody(requestBase.ParameterError, "查询错误"+err.Error(), gin.H{}))
 		return

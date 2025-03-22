@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-var sbomGenerator = initSbomGenerator()
+var Generator = initSbomGenerator()
 
 func initSbomGenerator() *SbomGenerator {
 	// 初始化上传模块

@@ -355,15 +355,19 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/service/checkSoft": {
+        "/api/v1/vulnerability/query": {
             "post": {
+                "description": "根据分析报告id查询",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "功能api",
+                "tags": [
+                    "漏洞分析"
+                ],
+                "summary": "查询已经分析的报告",
                 "parameters": [
                     {
                         "type": "string",
@@ -371,27 +375,40 @@ const docTemplate = `{
                         "name": "Authorization",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vulnerabilityScanningController.QueryRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "成功",
+                        "description": "报告信息",
                         "schema": {
-                            "$ref": "#/definitions/requestBase.ResponseBodyData"
+                            "$ref": "#/definitions/vulnerabilityScanningController.QueryResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/service/checkSoftV2": {
+        "/api/v1/vulnerability/scan": {
             "post": {
+                "description": "根据已经生成的sbom生成漏洞分析报告",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "功能api2",
+                "tags": [
+                    "漏洞分析"
+                ],
+                "summary": "生成分析漏洞接口",
                 "parameters": [
                     {
                         "type": "string",
@@ -399,13 +416,22 @@ const docTemplate = `{
                         "name": "Authorization",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "description": "分析参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vulnerabilityScanningController.ScanRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "成功",
+                        "description": "SBOM清单信息",
                         "schema": {
-                            "$ref": "#/definitions/requestBase.ResponseBodyData"
+                            "$ref": "#/definitions/vulnerabilityScanningController.ScanResponse"
                         }
                     }
                 }
@@ -592,6 +618,42 @@ const docTemplate = `{
             "properties": {
                 "sbomReports": {
                     "description": "sbom记录",
+                    "type": "string"
+                }
+            }
+        },
+        "vulnerabilityScanningController.QueryRequest": {
+            "type": "object",
+            "properties": {
+                "scanReportId": {
+                    "description": "查询分析报告的id",
+                    "type": "integer"
+                }
+            }
+        },
+        "vulnerabilityScanningController.QueryResponse": {
+            "type": "object",
+            "properties": {
+                "report_url": {
+                    "description": "返回报告下载链接",
+                    "type": "string"
+                }
+            }
+        },
+        "vulnerabilityScanningController.ScanRequest": {
+            "type": "object",
+            "properties": {
+                "sbomReportId": {
+                    "description": "生成sbom后返回的id",
+                    "type": "integer"
+                }
+            }
+        },
+        "vulnerabilityScanningController.ScanResponse": {
+            "type": "object",
+            "properties": {
+                "result_url": {
+                    "description": "结果链接",
                     "type": "string"
                 }
             }
