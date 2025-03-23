@@ -12,7 +12,7 @@ func initUploader() *FileUploader {
 	_uploader, err := NewUploader(UploadConfig{
 		UploadDir:    "./uploads",
 		PublicPath:   "/uploads/",
-		MaxFileSize:  50 << 20, // 50MB
+		MaxFileSize:  100 << 20, // 50MB
 		AllowedTypes: []string{".zip", ".tar.gz"},
 	})
 	if err != nil {

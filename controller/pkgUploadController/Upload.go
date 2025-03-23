@@ -14,7 +14,7 @@ import (
 )
 
 // 文件上传接口
-// @Summary 上传文件
+// @Summary 上传软件包
 // @Description 上传软件包压缩包到服务器并返回访问地址,支持.zip和.tar.gz格式压缩包,格式采用multipart/form-data,字段为file
 // @Tags 软件包管理
 // @Accept multipart/form-data
