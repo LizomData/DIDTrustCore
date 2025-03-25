@@ -33,12 +33,14 @@ func (r *ScanReportRepo) Create(report *model.ScanReport) error {
 
 		switch {
 		case err == nil: // 记录存在，执行更新
-			return tx.Model(&existing).Updates(map[string]interface{}{
-				"scan_result_filename": report.ScanResultFilename,
-				"download_url":         report.DownloadURL,
-				"expires_at":           report.ExpiresAt,
-				"updated_at":           time.Now().Unix(),
-			}).Error
+			return tx.Model(&existing).
+				Where("did_id = ?", report.DidID).
+				Updates(map[string]interface{}{
+					"scan_result_filename": report.ScanResultFilename,
+					"download_url":         report.DownloadURL,
+					"expires_at":           report.ExpiresAt,
+					"updated_at":           time.Now().Unix(),
+				}).Error
 
 		case errors.Is(err, gorm.ErrRecordNotFound): // 新记录
 			report.CreatedAt = time.Now().Unix()

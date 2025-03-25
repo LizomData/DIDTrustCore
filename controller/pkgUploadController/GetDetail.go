@@ -2,6 +2,7 @@ package pkgUploadController
 
 import (
 	"DIDTrustCore/model/requestBase"
+	pkgDB "DIDTrustCore/util/dataBase/pkgDb"
 	"DIDTrustCore/util/dataBase/sbomDb"
 	"DIDTrustCore/util/dataBase/scanReportDb"
 	"github.com/gin-gonic/gin"
@@ -22,22 +23,31 @@ func getDetail(c *gin.Context) {
 		c.JSON(requestBase.ResponseBody(requestBase.ParameterError, "无效的请求参数,检查请求参数", gin.H{}))
 		return
 	}
-	if req.DidID == "" {
-		c.JSON(requestBase.ResponseBody(requestBase.ParameterError, "didid为空", gin.H{}))
+	if req.PkgFilename == "" {
+		c.JSON(requestBase.ResponseBody(requestBase.ParameterError, "软件包名为空", gin.H{}))
+		return
+	}
+	pkg_record, err := pkgDB.Svc.GetRecordByFilename(req.PkgFilename)
+	if err != nil {
+		c.JSON(requestBase.ResponseBody(requestBase.NotFoundReport, "查询失败:"+err.Error(), gin.H{}))
+		return
+	}
+	if pkg_record.DidID == "" {
+		c.JSON(requestBase.ResponseBodySuccess(GetDetailResponse{}))
 		return
 	}
 
-	sbom_record, err := sbomDb.Sbom_svc.GetSBOMByDidID(req.DidID)
+	sbom_record, err := sbomDb.Sbom_svc.GetSBOMByDidID(pkg_record.DidID)
 	if err != nil {
 		c.JSON(requestBase.ResponseBody(requestBase.NotFoundReport, "查询失败:"+err.Error(), gin.H{}))
 		return
 	}
 
-	scan_record, err := scanReportDb.Svc.GetRecordByDidID(req.DidID)
+	scan_record, err := scanReportDb.Svc.GetRecordByDidID(pkg_record.DidID)
 	if err != nil {
 		c.JSON(requestBase.ResponseBody(requestBase.NotFoundReport, "查询失败:"+err.Error(), gin.H{}))
 		return
 	}
-	c.JSON(requestBase.ResponseBodySuccess(GetDetailResponse{sbom_record.DownloadURL, scan_record.DownloadURL}))
+	c.JSON(requestBase.ResponseBodySuccess(GetDetailResponse{pkg_record.DidID, sbom_record.DownloadURL, scan_record.DownloadURL}))
 
 }

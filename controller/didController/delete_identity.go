@@ -10,6 +10,7 @@ func DeleteSoftwareByID(contract *client.Contract, didID string) error {
 	if err != nil {
 		panic(fmt.Errorf("failed to evaluate RevokeSoftwareIdentity: %w", err))
 	}
+
 	fmt.Printf("*** Result:注销成功")
 	return nil
 }

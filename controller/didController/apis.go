@@ -131,6 +131,12 @@ func RemoveSoftwareIdentityApi(c *gin.Context) {
 		c.JSON(requestBase.ResponseBody(500, err.Error(), nil))
 		return
 	}
+	err = pkgDB.Svc.DeletePkgDidID(didID)
+	if err != nil {
+		c.JSON(requestBase.ResponseBody(500, err.Error(), nil))
+		return
+	}
+
 	c.JSON(requestBase.ResponseBody(200, "删除成功", nil))
 	return
 }

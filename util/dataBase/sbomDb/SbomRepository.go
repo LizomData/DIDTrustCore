@@ -33,13 +33,15 @@ func (r *SbomRepo) Create(report *model.SBOMReport) error {
 
 		switch {
 		case err == nil: // 记录存在，执行更新
-			return tx.Model(&existing).Updates(map[string]interface{}{
-				"sbom_filename": report.SbomFilename,
-				"download_url":  report.DownloadURL,
-				"format":        report.Format,
-				"expires_at":    report.ExpiresAt,
-				"updated_at":    time.Now().Unix(),
-			}).Error
+			return tx.Model(&existing).
+				Where("did_id = ?", report.DidID).
+				Updates(map[string]interface{}{
+					"sbom_filename": report.SbomFilename,
+					"download_url":  report.DownloadURL,
+					"format":        report.Format,
+					"expires_at":    report.ExpiresAt,
+					"updated_at":    time.Now().Unix(),
+				}).Error
 
 		case errors.Is(err, gorm.ErrRecordNotFound): // 新记录
 			report.CreatedAt = time.Now().Unix()

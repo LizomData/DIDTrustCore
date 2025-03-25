@@ -4,6 +4,7 @@ import (
 	"DIDTrustCore/model"
 	"DIDTrustCore/util/dataBase"
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"time"
 )
@@ -35,6 +36,14 @@ func (r *PkgRepo) Create(record *model.PkgRecord) error {
 func (r *PkgRepo) GetByDidID(didid string) (*model.PkgRecord, error) {
 	var report model.PkgRecord
 	err := r.db.Where("did_id = ?", didid).First(&report).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("record not found")
+	}
+	return &report, err
+}
+func (r *PkgRepo) GetByFilename(filename string) (*model.PkgRecord, error) {
+	var report model.PkgRecord
+	err := r.db.Where("pkg_filename = ?", filename).First(&report).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("record not found")
 	}
@@ -82,4 +91,33 @@ func (r *PkgRepo) UpdateDidIDByFilename(filename, didID string) error {
 		return errors.New("记录不存在或无需更新")
 	}
 	return nil
+}
+
+// ClearDidIDByDID 通过现有DID标识清空该字段
+func (r *PkgRepo) ClearDidIDByDID(didID string) error {
+	// 参数校验
+	if didID == "" {
+		return errors.New("DID标识不能为空")
+	}
+
+	// 构建更新数据（含空值校验）
+	updates := map[string]interface{}{
+		"did_id":     "", // 设置为空字符串
+		"updated_at": time.Now().Unix(),
+	}
+
+	// 执行更新操作
+	result := r.db.Model(&model.PkgRecord{}).
+		Where("did_id = ?", didID).
+		Updates(updates)
+
+	// 错误处理
+	switch {
+	case result.Error != nil:
+		return fmt.Errorf("数据库操作失败: %w", result.Error)
+	case result.RowsAffected == 0:
+		return errors.New("未找到匹配的记录")
+	default:
+		return nil
+	}
 }

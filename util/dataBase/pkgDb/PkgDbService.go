@@ -35,6 +35,10 @@ func (s *PkgDbService) GetRecordByDidID(didid string) (*model.PkgRecord, error) 
 	return s.repo.GetByDidID(didid)
 }
 
+func (s *PkgDbService) GetRecordByFilename(filename string) (*model.PkgRecord, error) {
+	return s.repo.GetByFilename(filename)
+}
+
 func (s *PkgDbService) ListPkgs(userID uint, page, size int) ([]model.PkgRecord, error) {
 	if page < 1 {
 		page = 1
@@ -60,4 +64,7 @@ func (s *PkgDbService) UpdateRecordDidID(filename, didid string) error {
 	}
 
 	return nil
+}
+func (s *PkgDbService) DeletePkgDidID(didid string) error {
+	return s.repo.ClearDidIDByDID(didid)
 }

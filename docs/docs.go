@@ -517,13 +517,7 @@ const docTemplate = `{
                 "created_at": {
                     "type": "integer"
                 },
-                "didid": {
-                    "type": "string"
-                },
                 "download_url": {
-                    "type": "string"
-                },
-                "format": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -536,9 +530,6 @@ const docTemplate = `{
             "properties": {
                 "created_at": {
                     "type": "integer"
-                },
-                "didid": {
-                    "type": "string"
                 },
                 "download_url": {
                     "type": "string"
@@ -599,7 +590,7 @@ const docTemplate = `{
         "pkgUploadController.GetDetailRequest": {
             "type": "object",
             "properties": {
-                "didid": {
+                "pkg_filename": {
                     "type": "string"
                 }
             }
@@ -607,6 +598,9 @@ const docTemplate = `{
         "pkgUploadController.GetDetailResponse": {
             "type": "object",
             "properties": {
+                "didid": {
+                    "type": "string"
+                },
                 "sbomFileUrl": {
                     "type": "string"
                 },

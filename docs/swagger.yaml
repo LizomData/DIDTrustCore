@@ -50,11 +50,7 @@ definitions:
     properties:
       created_at:
         type: integer
-      didid:
-        type: string
       download_url:
-        type: string
-      format:
         type: string
       updated_at:
         type: integer
@@ -63,8 +59,6 @@ definitions:
     properties:
       created_at:
         type: integer
-      didid:
-        type: string
       download_url:
         type: string
       updated_at:
@@ -103,11 +97,13 @@ definitions:
     type: object
   pkgUploadController.GetDetailRequest:
     properties:
-      didid:
+      pkg_filename:
         type: string
     type: object
   pkgUploadController.GetDetailResponse:
     properties:
+      didid:
+        type: string
       sbomFileUrl:
         type: string
       scanReportFileUrl:

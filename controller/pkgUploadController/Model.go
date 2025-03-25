@@ -24,9 +24,10 @@ type QueryRequest struct {
 }
 
 type GetDetailRequest struct {
-	DidID string `json:"didid"`
+	PkgFilename string `json:"pkg_filename"`
 }
 type GetDetailResponse struct {
+	DidID             string `json:"didid"`
 	SbomFileUrl       string `json:"sbomFileUrl"`
 	ScanReportFileUrl string `json:"scanReportFileUrl"`
 }
