@@ -10,7 +10,7 @@ var Uploader = initUploader()
 func initUploader() *FileUploader {
 	// 初始化上传模块
 	_uploader, err := NewUploader(UploadConfig{
-		UploadDir:    "./uploads",
+		UploadDir:    "./tmp/uploads",
 		PublicPath:   "/uploads/",
 		MaxFileSize:  100 << 20, // 50MB
 		AllowedTypes: []string{".zip", ".tar.gz"},

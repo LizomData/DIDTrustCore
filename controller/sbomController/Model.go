@@ -13,10 +13,7 @@ type SbomGenerator struct {
 
 // GenerateSBOMRequest 定义请求体结构
 type GenerateSBOMRequest struct {
-	FileURL string `json:"file_url"`
-	Format  string `json:"format" enums:"spdx-json,cyclonedx-json,syft-json"`
-}
-
-type QuerySBOMRequest struct {
-	SbomReportId uint `json:"sbomReportId"` //页面索引
+	DidID      string `json:"didid"`
+	PkgFileUrl string `json:"pkg_file_url"`
+	Format     string `json:"format" enums:"spdx-json,cyclonedx-json,syft-json"`
 }

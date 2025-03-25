@@ -20,7 +20,7 @@ func initSbomGenerator() *SbomGenerator {
 func newGenerator(cfg SbomConfig) (*SbomGenerator, error) {
 	// 设置默认值
 	if cfg.SBOMStorageDir == "" {
-		cfg.SBOMStorageDir = "./sbomStorage"
+		cfg.SBOMStorageDir = "./tmp/sbomStorage"
 	}
 	if cfg.PublicPath == "" {
 		cfg.PublicPath = "/sbom_list/"

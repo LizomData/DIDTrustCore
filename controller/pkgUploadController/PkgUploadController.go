@@ -14,5 +14,7 @@ func Routers(e *gin.Engine) {
 	group.Use(util.AuthMiddleware())
 	{
 		group.POST("/upload", upload)
+		group.POST("/query", query)
+		group.POST("/getDetail", getDetail)
 	}
 }

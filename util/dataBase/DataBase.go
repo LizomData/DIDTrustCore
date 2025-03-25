@@ -13,7 +13,6 @@ const (
 )
 
 var Db = InitDb()
-var Sbom_repo = NewSBOMRepository(Db)
 
 func InitDb() *gorm.DB {
 	// 连接数据库

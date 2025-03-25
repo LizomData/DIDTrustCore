@@ -37,12 +37,12 @@ definitions:
     properties:
       created_at:
         type: integer
+      didid:
+        type: string
       download_url:
         type: string
-      pkg_filename:
+      pkgFilename:
         type: string
-      pkgRecordId:
-        type: integer
       updated_at:
         type: integer
     type: object
@@ -50,14 +50,12 @@ definitions:
     properties:
       created_at:
         type: integer
+      didid:
+        type: string
       download_url:
         type: string
       format:
         type: string
-      sbom_filename:
-        type: string
-      sbomReportId:
-        type: integer
       updated_at:
         type: integer
     type: object
@@ -65,11 +63,9 @@ definitions:
     properties:
       created_at:
         type: integer
-      download_url:
+      didid:
         type: string
-      scanReportId:
-        type: integer
-      scanResultFilename:
+      download_url:
         type: string
       updated_at:
         type: integer
@@ -105,6 +101,25 @@ definitions:
       updated:
         type: integer
     type: object
+  pkgUploadController.GetDetailRequest:
+    properties:
+      didid:
+        type: string
+    type: object
+  pkgUploadController.GetDetailResponse:
+    properties:
+      sbomFileUrl:
+        type: string
+      scanReportFileUrl:
+        type: string
+    type: object
+  pkgUploadController.QueryRequest:
+    properties:
+      page:
+        type: integer
+      size:
+        type: integer
+    type: object
   requestBase.ResponseBodyData:
     properties:
       code:
@@ -121,7 +136,7 @@ definitions:
     type: object
   sbomController.GenerateSBOMRequest:
     properties:
-      file_url:
+      didid:
         type: string
       format:
         enum:
@@ -129,24 +144,15 @@ definitions:
         - cyclonedx-json
         - syft-json
         type: string
-    type: object
-  sbomController.QuerySBOMRequest:
-    properties:
-      sbomReportId:
-        description: 页面索引
-        type: integer
-    type: object
-  vulnerabilityScanningController.QueryRequest:
-    properties:
-      scanReportId:
-        description: 查询分析报告的id
-        type: integer
+      pkg_file_url:
+        type: string
     type: object
   vulnerabilityScanningController.ScanRequest:
     properties:
-      sbomReportId:
-        description: 生成sbom后返回的id
-        type: integer
+      didid:
+        type: string
+      sbom_file_url:
+        type: string
     type: object
 info:
   contact: {}
@@ -295,6 +301,60 @@ paths:
             $ref: '#/definitions/requestBase.ResponseBodyData'
       tags:
       - did身份标识管理
+  /api/v1/pkg/getDetail:
+    post:
+      consumes:
+      - application/json
+      description: 获取软件包相关信息(生成的sbom,漏洞分析报告下载路径)
+      parameters:
+      - description: jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/pkgUploadController.GetDetailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 结果
+          schema:
+            $ref: '#/definitions/pkgUploadController.GetDetailResponse'
+      summary: 获取软件包相关信息(生成的sbom,漏洞分析报告下载路径)
+      tags:
+      - 软件包管理
+  /api/v1/pkg/query:
+    post:
+      consumes:
+      - application/json
+      description: 查询用户上传软件包记录
+      parameters:
+      - description: jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/pkgUploadController.QueryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 软件包列表
+          schema:
+            $ref: '#/definitions/model.PkgRecord'
+      summary: 查询软件包列表
+      tags:
+      - 软件包管理
   /api/v1/pkg/upload:
     post:
       consumes:
@@ -313,7 +373,7 @@ paths:
           description: 上传成功
           schema:
             $ref: '#/definitions/model.PkgRecord'
-      summary: 上传文件
+      summary: 上传软件包
       tags:
       - 软件包管理
   /api/v1/sbom/generate:
@@ -343,60 +403,6 @@ paths:
       summary: 生成SBOM接口
       tags:
       - SBOM管理
-  /api/v1/sbom/query:
-    post:
-      consumes:
-      - application/json
-      description: 查找用户生成sbom历史记录
-      parameters:
-      - description: jwt
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 查询参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/sbomController.QuerySBOMRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: SBOM记录
-          schema:
-            $ref: '#/definitions/model.SBOMReport'
-      summary: 查询SBOM接口
-      tags:
-      - SBOM管理
-  /api/v1/vulnerability/query:
-    post:
-      consumes:
-      - application/json
-      description: 根据分析报告id查询
-      parameters:
-      - description: jwt
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 查询参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/vulnerabilityScanningController.QueryRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 报告信息
-          schema:
-            $ref: '#/definitions/model.ScanReport'
-      summary: 查询已经分析的报告
-      tags:
-      - 漏洞分析
   /api/v1/vulnerability/scan:
     post:
       consumes:

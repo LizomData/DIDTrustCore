@@ -29,7 +29,7 @@ func loginHandler(c *gin.Context) {
 	user = _user
 
 	// 生成JWT
-	tokenString, err := util.GenerateToken(user, 48)
+	tokenString, err := util.GenerateToken(user, 240)
 	if err != nil {
 		c.JSON(requestBase.ResponseBody(requestBase.TokenGenerationFailed, "生成token失败", gin.H{}))
 		return

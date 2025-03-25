@@ -18,3 +18,15 @@ type UploadConfig struct {
 type FileUploader struct {
 	Config UploadConfig
 }
+type QueryRequest struct {
+	Page int `json:"page" `
+	Size int `json:"size"`
+}
+
+type GetDetailRequest struct {
+	DidID string `json:"didid"`
+}
+type GetDetailResponse struct {
+	SbomFileUrl       string `json:"sbomFileUrl"`
+	ScanReportFileUrl string `json:"scanReportFileUrl"`
+}

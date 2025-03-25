@@ -1,4 +1,4 @@
-package pkgDB
+package pkgDb
 
 import (
 	"DIDTrustCore/model"
@@ -32,16 +32,54 @@ func (r *PkgRepo) Create(record *model.PkgRecord) error {
 }
 
 // GetByID 通过ID获取记录
-func (r *PkgRepo) GetByID(id uint) (*model.PkgRecord, error) {
+func (r *PkgRepo) GetByDidID(didid string) (*model.PkgRecord, error) {
 	var report model.PkgRecord
-	err := r.db.Where("id = ?", id).First(&report).Error
+	err := r.db.Where("did_id = ?", didid).First(&report).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("record not found")
 	}
 	return &report, err
 }
 
-// Delete 删除记录（硬删除）
-func (r *PkgRepo) Delete(id uint) error {
-	return r.db.Unscoped().Delete(&model.PkgRecord{ID: id}).Error
+// 分页获取用户记录
+func (r *PkgRepo) GetByUser(userID uint, page, size int) ([]model.PkgRecord, error) {
+	var reports []model.PkgRecord
+	offset := (page - 1) * size
+	result := r.db.Where("user_id = ?", userID).
+		Offset(offset).
+		Limit(size).
+		Order("created_at DESC").
+		Find(&reports)
+	return reports, result.Error
+}
+
+// UpdateDidIDByFilename 通过文件名更新DID标识
+func (r *PkgRepo) UpdateDidIDByFilename(filename, didID string) error {
+	// 参数校验
+	if filename == "" {
+		return errors.New("文件名不能为空")
+	}
+	if didID == "" {
+		return errors.New("DID标识不能为空")
+	}
+
+	// 构建更新数据（包含更新时间戳）
+	updates := map[string]interface{}{
+		"did_id":     didID,
+		"updated_at": time.Now().Unix(),
+	}
+
+	// 执行更新操作（使用主键字段）
+	result := r.db.Model(&model.PkgRecord{}).
+		Where("pkg_filename = ?", filename). // 主键条件
+		Updates(updates)
+
+	// 错误处理
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("记录不存在或无需更新")
+	}
+	return nil
 }

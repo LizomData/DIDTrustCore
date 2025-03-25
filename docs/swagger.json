@@ -229,6 +229,88 @@
                 }
             }
         },
+        "/api/v1/pkg/getDetail": {
+            "post": {
+                "description": "获取软件包相关信息(生成的sbom,漏洞分析报告下载路径)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "软件包管理"
+                ],
+                "summary": "获取软件包相关信息(生成的sbom,漏洞分析报告下载路径)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pkgUploadController.GetDetailRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "结果",
+                        "schema": {
+                            "$ref": "#/definitions/pkgUploadController.GetDetailResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/pkg/query": {
+            "post": {
+                "description": "查询用户上传软件包记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "软件包管理"
+                ],
+                "summary": "查询软件包列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pkgUploadController.QueryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "软件包列表",
+                        "schema": {
+                            "$ref": "#/definitions/model.PkgRecord"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/pkg/upload": {
             "post": {
                 "description": "上传软件包压缩包到服务器并返回访问地址,支持.zip和.tar.gz格式压缩包,格式采用multipart/form-data,字段为file",
@@ -241,7 +323,7 @@
                 "tags": [
                     "软件包管理"
                 ],
-                "summary": "上传文件",
+                "summary": "上传软件包",
                 "parameters": [
                     {
                         "type": "file",
@@ -297,88 +379,6 @@
                         "description": "SBOM清单信息",
                         "schema": {
                             "$ref": "#/definitions/model.SBOMReport"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/sbom/query": {
-            "post": {
-                "description": "查找用户生成sbom历史记录",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "SBOM管理"
-                ],
-                "summary": "查询SBOM接口",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "jwt",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "查询参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/sbomController.QuerySBOMRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "SBOM记录",
-                        "schema": {
-                            "$ref": "#/definitions/model.SBOMReport"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/vulnerability/query": {
-            "post": {
-                "description": "根据分析报告id查询",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "漏洞分析"
-                ],
-                "summary": "查询已经分析的报告",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "jwt",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "查询参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/vulnerabilityScanningController.QueryRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "报告信息",
-                        "schema": {
-                            "$ref": "#/definitions/model.ScanReport"
                         }
                     }
                 }
@@ -485,13 +485,13 @@
                 "created_at": {
                     "type": "integer"
                 },
+                "didid": {
+                    "type": "string"
+                },
                 "download_url": {
                     "type": "string"
                 },
-                "pkgRecordId": {
-                    "type": "integer"
-                },
-                "pkg_filename": {
+                "pkgFilename": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -505,16 +505,13 @@
                 "created_at": {
                     "type": "integer"
                 },
+                "didid": {
+                    "type": "string"
+                },
                 "download_url": {
                     "type": "string"
                 },
                 "format": {
-                    "type": "string"
-                },
-                "sbomReportId": {
-                    "type": "integer"
-                },
-                "sbom_filename": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -528,13 +525,10 @@
                 "created_at": {
                     "type": "integer"
                 },
-                "download_url": {
+                "didid": {
                     "type": "string"
                 },
-                "scanReportId": {
-                    "type": "integer"
-                },
-                "scanResultFilename": {
+                "download_url": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -590,6 +584,36 @@
                 }
             }
         },
+        "pkgUploadController.GetDetailRequest": {
+            "type": "object",
+            "properties": {
+                "didid": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkgUploadController.GetDetailResponse": {
+            "type": "object",
+            "properties": {
+                "sbomFileUrl": {
+                    "type": "string"
+                },
+                "scanReportFileUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkgUploadController.QueryRequest": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
         "requestBase.ResponseBodyData": {
             "type": "object",
             "properties": {
@@ -612,7 +636,7 @@
         "sbomController.GenerateSBOMRequest": {
             "type": "object",
             "properties": {
-                "file_url": {
+                "didid": {
                     "type": "string"
                 },
                 "format": {
@@ -622,33 +646,20 @@
                         "cyclonedx-json",
                         "syft-json"
                     ]
-                }
-            }
-        },
-        "sbomController.QuerySBOMRequest": {
-            "type": "object",
-            "properties": {
-                "sbomReportId": {
-                    "description": "页面索引",
-                    "type": "integer"
-                }
-            }
-        },
-        "vulnerabilityScanningController.QueryRequest": {
-            "type": "object",
-            "properties": {
-                "scanReportId": {
-                    "description": "查询分析报告的id",
-                    "type": "integer"
+                },
+                "pkg_file_url": {
+                    "type": "string"
                 }
             }
         },
         "vulnerabilityScanningController.ScanRequest": {
             "type": "object",
             "properties": {
-                "sbomReportId": {
-                    "description": "生成sbom后返回的id",
-                    "type": "integer"
+                "didid": {
+                    "type": "string"
+                },
+                "sbom_file_url": {
+                    "type": "string"
                 }
             }
         }

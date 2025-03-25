@@ -1,4 +1,4 @@
-package scanReportDb
+package sbomDb
 
 import (
 	"DIDTrustCore/model"
@@ -8,21 +8,21 @@ import (
 	"time"
 )
 
-var scanReportRepo = NewScanReportRepository(dataBase.Db)
+var Sbom_repo = NewSBOMRepository(dataBase.Db)
 
-type ScanReportRepo struct {
+type SbomRepo struct {
 	db *gorm.DB
 }
 
-func NewScanReportRepository(db *gorm.DB) *ScanReportRepo {
-	return &ScanReportRepo{db: db}
+func NewSBOMRepository(db *gorm.DB) *SbomRepo {
+	return &SbomRepo{db: db}
 }
 
-// Create 创建分析记录
-func (r *ScanReportRepo) Create(report *model.ScanReport) error {
+// Create 创建SBOM记录
+func (r *SbomRepo) Create(report *model.SBOMReport) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		// 验证必要字段
-		if report.UserID == 0 || report.DownloadURL == "" {
+		if report.UserID == 0 || report.DownloadURL == "" || report.SbomFilename == "" {
 			return errors.New("missing required fields")
 		}
 		report.CreatedAt = time.Now().Unix()
@@ -32,8 +32,8 @@ func (r *ScanReportRepo) Create(report *model.ScanReport) error {
 }
 
 // GetByID 通过ID获取记录
-func (r *ScanReportRepo) GetByDidID(didid string) (*model.ScanReport, error) {
-	var report model.ScanReport
+func (r *SbomRepo) GetByDidID(didid string) (*model.SBOMReport, error) {
+	var report model.SBOMReport
 	err := r.db.Where("did_id = ?", didid).First(&report).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return &report, nil

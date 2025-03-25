@@ -15,9 +15,10 @@ func newSvc(repo ScanReportRepo) *ScanReportDbService {
 	return &ScanReportDbService{repo: repo}
 }
 
-func (s *ScanReportDbService) CreateRecord(userid uint, filename, download_url string) (*model.ScanReport, error) {
+func (s *ScanReportDbService) CreateRecord(userid uint, didid, filename, download_url string) (*model.ScanReport, error) {
 	report := &model.ScanReport{
 		UserID:             userid,
+		DidID:              didid,
 		ScanResultFilename: filename,
 		DownloadURL:        download_url,
 		ExpiresAt:          time.Now().Unix() + 24*3600,
@@ -29,10 +30,6 @@ func (s *ScanReportDbService) CreateRecord(userid uint, filename, download_url s
 	return report, nil
 }
 
-func (s *ScanReportDbService) GetReportyID(id uint) (*model.ScanReport, error) {
-	return s.repo.GetByID(id)
-}
-
-func (s *ScanReportDbService) RemoveRecord(id uint) error {
-	return s.repo.Delete(id)
+func (s *ScanReportDbService) GetRecordByDidID(didid string) (*model.ScanReport, error) {
+	return s.repo.GetByDidID(didid)
 }

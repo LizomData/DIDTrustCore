@@ -47,7 +47,7 @@ func initService() *GrypeService {
 	opts.File = "scanResult/grype-report.json"
 	opts.Pretty = true
 
-	config := GrypeServiceConfig{opts, "scanResult/", "/scanResult/"}
+	config := GrypeServiceConfig{opts, "./tmp/scanResult/", "/scanResult/"}
 
 	//userInput := "sbom:/Users/q/Downloads/bom.spdx.json"
 	//if err := runGrypeWrapper(app, opts, userInput); err != nil {

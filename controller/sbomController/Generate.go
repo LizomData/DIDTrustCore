@@ -4,7 +4,7 @@ import (
 	"DIDTrustCore/common"
 	"DIDTrustCore/controller/pkgUploadController"
 	"DIDTrustCore/model/requestBase"
-	"DIDTrustCore/util/dataBase"
+	"DIDTrustCore/util/dataBase/sbomDb"
 	"DIDTrustCore/util/extractorCustom"
 	"DIDTrustCore/util/sbom"
 	"fmt"
@@ -32,7 +32,7 @@ func generate(c *gin.Context) {
 	}
 
 	// 验证并解析文件URL
-	filename, err := validateFileURL(req.FileURL)
+	filename, err := validateFileURL(req.PkgFileUrl)
 	if err != nil {
 		c.JSON(requestBase.ResponseBody(requestBase.FileNotFound, "文件URL无效,检查软件包路径", gin.H{}))
 		return
@@ -78,7 +78,7 @@ func generate(c *gin.Context) {
 		return
 	}
 	user, err := common.GetUserFromContext(c)
-	record, err := dataBase.Sbom_svc.GenerateSBOMRecord(user.ID, sbomFilename, download_url, req.Format)
+	record, err := sbomDb.Sbom_svc.GenerateSBOMRecord(user.ID, req.DidID, sbomFilename, download_url, req.Format)
 	//保存到数据库,如果已经登陆了
 	if err != nil {
 		c.JSON(requestBase.ResponseBody(

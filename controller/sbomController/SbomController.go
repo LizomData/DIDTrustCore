@@ -10,13 +10,10 @@ func Routers(e *gin.Engine) {
 	e.Static(Generator.Config.PublicPath, Generator.Config.SBOMStorageDir)
 
 	group := e.Group("/api/v1/sbom")
-	group.Use()
-	{
-	}
+
 	group.Use(util.AuthMiddleware())
 	{
 		group.POST("/generate", generate)
-		group.POST("/query", query)
 
 	}
 

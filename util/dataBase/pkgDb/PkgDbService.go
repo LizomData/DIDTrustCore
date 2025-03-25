@@ -1,7 +1,9 @@
-package pkgDB
+package pkgDb
 
 import (
 	"DIDTrustCore/model"
+	"errors"
+	"fmt"
 	"time"
 )
 
@@ -29,10 +31,33 @@ func (s *PkgDbService) CreateRecord(userid uint, filename, download_url string) 
 	return record, nil
 }
 
-func (s *PkgDbService) GetRecordByid(id uint) (*model.PkgRecord, error) {
-	return s.repo.GetByID(id)
+func (s *PkgDbService) GetRecordByDidID(didid string) (*model.PkgRecord, error) {
+	return s.repo.GetByDidID(didid)
 }
 
-func (s *PkgDbService) RemoveRecord(id uint) error {
-	return s.repo.Delete(id)
+func (s *PkgDbService) ListPkgs(userID uint, page, size int) ([]model.PkgRecord, error) {
+	if page < 1 {
+		page = 1
+	}
+	if size < 1 || size > 100 {
+		size = 20
+	}
+	return s.repo.GetByUser(userID, page, size)
+}
+
+func (s *PkgDbService) UpdateRecordDidID(filename, didid string) error {
+	// 参数校验
+	if filename == "" {
+		return errors.New("文件名不能为空")
+	}
+	if didid == "" {
+		return errors.New("DID标识不能为空")
+	}
+
+	// 执行更新
+	if err := s.repo.UpdateDidIDByFilename(filename, didid); err != nil {
+		return fmt.Errorf("更新DID失败: %w", err)
+	}
+
+	return nil
 }

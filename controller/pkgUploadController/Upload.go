@@ -3,6 +3,7 @@ package pkgUploadController
 import (
 	"DIDTrustCore/common"
 	"DIDTrustCore/model/requestBase"
+	"DIDTrustCore/util"
 	pkgDB "DIDTrustCore/util/dataBase/pkgDb"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,6 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"time"
 )
 
 // 文件上传接口
@@ -71,10 +71,7 @@ func (u *FileUploader) UploadFile(fileHeader *multipart.FileHeader) (*UploadResu
 	}
 
 	// 生成唯一文件名
-	newFilename := fmt.Sprintf("%d_%d%s",
-		time.Now().UnixNano(),
-		time.Now().Nanosecond(),
-		filepath.Ext(fileHeader.Filename))
+	newFilename := util.GenerateUniqueFilename(fileHeader.Filename)
 
 	// 保存文件
 	dstPath := filepath.Join(u.Config.UploadDir, newFilename)

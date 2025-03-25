@@ -2,79 +2,22 @@ package util
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"mime/multipart"
-	"os"
-	"os/exec"
+	"math/rand"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
-func SaveUploadedFile(c *gin.Context, file *multipart.FileHeader) (string, error) {
-	// 创建临时目录
-	tempDir, err := os.MkdirTemp("", "sbom-upload-*")
-	if err != nil {
-		return "", err
-	}
+func GenerateUniqueFilename(originalName string) string {
+	// 获取文件扩展名（包含点，如 ".jpg"）
+	ext := filepath.Ext(originalName)
 
-	// 保存文件
-	dstPath := filepath.Join(tempDir, file.Filename)
-	if err := c.SaveUploadedFile(file, dstPath); err != nil {
-		return "", err
-	}
+	// 去除扩展名的文件名主体（如 "photo"）
+	nameWithoutExt := strings.TrimSuffix(originalName, ext)
 
-	return tempDir, nil
-}
+	// 生成唯一标识（时间戳 + 随机数防碰撞）
+	uniquePart := fmt.Sprintf("%d_%d", time.Now().UnixNano(), rand.Intn(1000))
 
-func CloneGitHubRepo(repoURL string) (string, error) {
-	// 创建临时目录
-	tempDir, err := os.MkdirTemp("", "sbom-repo-*")
-	if err != nil {
-		return "", err
-	}
-
-	// 执行 git clone
-	cmd := exec.Command("git", "clone", repoURL, tempDir)
-	if output, err := cmd.CombinedOutput(); err != nil {
-		return "", fmt.Errorf("git clone failed: %s", string(output))
-	}
-
-	return tempDir, nil
-}
-
-func CleanupTempDir(dir string) {
-	os.RemoveAll(dir)
-}
-
-func SaveUploadedFileWithCleanup(c *gin.Context, file *multipart.FileHeader) (string, func(), error) {
-	tempDir, err := os.MkdirTemp("", "sbom-upload-*")
-	if err != nil {
-		return "", nil, fmt.Errorf("创建临时目录失败: %w", err)
-	}
-
-	cleanup := func() { os.RemoveAll(tempDir) }
-
-	if err := c.SaveUploadedFile(file, filepath.Join(tempDir, file.Filename)); err != nil {
-		cleanup()
-		return "", nil, fmt.Errorf("保存文件失败: %w", err)
-	}
-
-	return tempDir, cleanup, nil
-}
-
-// util/git.go
-func CloneGitRepoWithCleanup(repoURL string) (string, func(), error) {
-	tempDir, err := os.MkdirTemp("", "sbom-repo-*")
-	if err != nil {
-		return "", nil, fmt.Errorf("创建临时目录失败: %w", err)
-	}
-
-	cleanup := func() { os.RemoveAll(tempDir) }
-
-	cmd := exec.Command("git", "clone", repoURL, tempDir)
-	if output, err := cmd.CombinedOutput(); err != nil {
-		cleanup()
-		return "", nil, fmt.Errorf("克隆失败: %s\n%s", err, string(output))
-	}
-
-	return tempDir, cleanup, nil
+	// 重组文件名：主体_唯一标识.扩展名
+	return fmt.Sprintf("%s_%s%s", nameWithoutExt, uniquePart, ext)
 }

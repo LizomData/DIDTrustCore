@@ -4,6 +4,7 @@ import (
 	"DIDTrustCore/did_connnection"
 	"DIDTrustCore/model"
 	"DIDTrustCore/model/requestBase"
+	pkgDB "DIDTrustCore/util/dataBase/pkgDb"
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,7 +37,15 @@ func CreateSoftwareIdentityApi(c *gin.Context) {
 		c.JSON(requestBase.ResponseBody(500, err.Error(), nil))
 		return
 	}
-	c.JSON(requestBase.ResponseBody(200, "创建成功", "DidID:"+didID))
+	err = pkgDB.Svc.UpdateRecordDidID(name, didID)
+	if err != nil {
+		c.JSON(requestBase.ResponseBody(500, err.Error(), gin.H{}))
+		return
+	}
+
+	c.JSON(requestBase.ResponseBodySuccess(gin.H{
+		"DidID": didID,
+	}))
 	return
 }
 
