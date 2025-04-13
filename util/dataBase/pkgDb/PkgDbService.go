@@ -17,10 +17,11 @@ func newSvc(repo PkgRepo) *PkgDbService {
 	return &PkgDbService{repo: repo}
 }
 
-func (s *PkgDbService) CreateRecord(userid uint, filename, download_url string) (*model.PkgRecord, error) {
+func (s *PkgDbService) CreateRecord(userid uint, filename, pkgname, download_url string) (*model.PkgRecord, error) {
 	record := &model.PkgRecord{
 		UserID:      userid,
 		PkgFilename: filename,
+		PkgName:     pkgname,
 		DownloadURL: download_url,
 		ExpiresAt:   time.Now().Unix() + 24*3600,
 	}

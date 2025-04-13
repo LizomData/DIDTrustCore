@@ -2,6 +2,7 @@ package model
 
 type PkgRecord struct {
 	PkgFilename string `gorm:"primaryKey;type:varchar(255);" json:"pkgFilename"`
+	PkgName     string `gorm:"type:varchar(255);not null;" json:"pkgName"`
 	DidID       string `gorm:"type:varchar(255);not null;" json:"didid"`
 	UserID      uint   `gorm:"not null;index:idx_user;comment:关联用户ID" json:"-"`
 	DownloadURL string `gorm:"type:varchar(1024);not null;comment:下载地址" json:"download_url"`

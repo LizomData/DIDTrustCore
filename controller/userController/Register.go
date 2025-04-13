@@ -2,6 +2,7 @@ package userController
 
 import (
 	"DIDTrustCore/model/requestBase"
+	"DIDTrustCore/util"
 	"DIDTrustCore/util/dataBase"
 	"github.com/gin-gonic/gin"
 	"time"
@@ -33,5 +34,17 @@ func registerHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(requestBase.ResponseBodySuccess(gin.H{"username": user.Username, "timeStamp": time.Now().Unix()}))
+	finded, user_new := dataBase.FindUser(user.Username)
+	if !finded {
+		c.JSON(requestBase.ResponseBody(requestBase.RegisterFailed, "注册失败", gin.H{}))
+		return
+	}
+	// 生成JWT
+	tokenString, err := util.GenerateToken(user_new, 240)
+	if err != nil {
+		c.JSON(requestBase.ResponseBody(requestBase.TokenGenerationFailed, "生成token失败", gin.H{}))
+		return
+	}
+
+	c.JSON(requestBase.ResponseBodySuccess(gin.H{"username": user.Username, "token": tokenString, "timeStamp": time.Now().Unix()}))
 }

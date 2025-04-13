@@ -44,7 +44,7 @@ func upload(c *gin.Context) {
 		return
 	}
 	//保存上传记录
-	record, err := pkgDB.Svc.CreateRecord(user.ID, result.FileName, result.PublicURL)
+	record, err := pkgDB.Svc.CreateRecord(user.ID, result.FileName, fileHeader.Filename, result.PublicURL)
 	if err != nil {
 		c.JSON(requestBase.ResponseBody(requestBase.UploadFailed, "保存上传文件记录失败:"+err.Error(), gin.H{}))
 		return

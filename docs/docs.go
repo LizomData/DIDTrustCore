@@ -396,6 +396,129 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/vulnerability/create": {
+            "post": {
+                "description": "创建个人漏洞",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "漏洞库管理"
+                ],
+                "summary": "创建个人漏洞",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "创建参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vulnerabilityDbController.VulnerabilityData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "创建漏洞结果",
+                        "schema": {
+                            "$ref": "#/definitions/model.BlobsCustomer"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/vulnerability/query": {
+            "post": {
+                "description": "查询公开的漏洞",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "漏洞库管理"
+                ],
+                "summary": "查询漏洞列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vulnerabilityDbController.QueryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "漏洞列表",
+                        "schema": {
+                            "$ref": "#/definitions/vulnerabilityDbController.VulnerabilityData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/vulnerability/queryByUser": {
+            "post": {
+                "description": "查询用户创建的漏洞",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "漏洞库管理"
+                ],
+                "summary": "查询用户创建的漏洞",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vulnerabilityDbController.QueryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "漏洞列表",
+                        "schema": {
+                            "$ref": "#/definitions/vulnerabilityDbController.VulnerabilityData"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/vulnerability/scan": {
             "post": {
                 "description": "根据已经生成的sbom生成漏洞分析报告",
@@ -459,6 +582,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.BlobsCustomer": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "integer"
+                },
+                "userID": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "model.DidDocument": {
             "type": "object",
             "properties": {
@@ -504,6 +644,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "pkgFilename": {
+                    "type": "string"
+                },
+                "pkgName": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -658,8 +801,90 @@ const docTemplate = `{
                 }
             }
         },
+        "vulnerabilityDbController.QueryRequest": {
+            "type": "object",
+            "required": [
+                "page",
+                "size"
+            ],
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
+        "vulnerabilityDbController.Severity": {
+            "type": "object",
+            "properties": {
+                "rank": {
+                    "type": "integer"
+                },
+                "scheme": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "value": {
+                    "description": "嵌套对象",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/vulnerabilityDbController.SeverityValue"
+                        }
+                    ]
+                }
+            }
+        },
+        "vulnerabilityDbController.SeverityValue": {
+            "type": "object",
+            "properties": {
+                "vector": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "vulnerabilityDbController.VulnerabilityData": {
+            "type": "object",
+            "required": [
+                "assigner",
+                "description",
+                "id",
+                "severities"
+            ],
+            "properties": {
+                "assigner": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "必填字段",
+                    "type": "string"
+                },
+                "severities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/vulnerabilityDbController.Severity"
+                    }
+                }
+            }
+        },
         "vulnerabilityScanningController.ScanRequest": {
             "type": "object",
+            "required": [
+                "didid",
+                "sbom_file_url"
+            ],
             "properties": {
                 "didid": {
                     "type": "string"
