@@ -1,8 +1,8 @@
 # 阶段1：编译 Go 二进制
-FROM golang:1.24-alpine AS builder
+FROM golang:1.24-bullseye AS builder
 WORKDIR /app
 
-RUN apk --no-cache --update add ca-certificates
+# RUN apk --no-cache --update add ca-certificates
 
 COPY go.mod go.sum ./
 RUN go mod download

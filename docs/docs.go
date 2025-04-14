@@ -423,7 +423,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vulnerabilityDbController.VulnerabilityData"
+                            "$ref": "#/definitions/model.VulnerabilityData"
                         }
                     }
                 ],
@@ -432,6 +432,38 @@ const docTemplate = `{
                         "description": "创建漏洞结果",
                         "schema": {
                             "$ref": "#/definitions/model.BlobsCustomer"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/vulnerability/getRankDistribution": {
+            "get": {
+                "description": "统计漏洞",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "漏洞库管理"
+                ],
+                "summary": "统计漏洞",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "统计结果",
+                        "schema": {
+                            "$ref": "#/definitions/vulnerabilityDbController.GetRankDistributionRespones"
                         }
                     }
                 }
@@ -472,7 +504,7 @@ const docTemplate = `{
                     "200": {
                         "description": "漏洞列表",
                         "schema": {
-                            "$ref": "#/definitions/vulnerabilityDbController.VulnerabilityData"
+                            "$ref": "#/definitions/model.VulnerabilityData"
                         }
                     }
                 }
@@ -513,7 +545,7 @@ const docTemplate = `{
                     "200": {
                         "description": "漏洞列表",
                         "schema": {
-                            "$ref": "#/definitions/vulnerabilityDbController.VulnerabilityData"
+                            "$ref": "#/definitions/model.VulnerabilityData"
                         }
                     }
                 }
@@ -696,6 +728,39 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Severity": {
+            "type": "object",
+            "properties": {
+                "rank": {
+                    "type": "integer"
+                },
+                "scheme": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "value": {
+                    "description": "嵌套对象",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.SeverityValue"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.SeverityValue": {
+            "type": "object",
+            "properties": {
+                "vector": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
         "model.User": {
             "type": "object",
             "properties": {
@@ -727,6 +792,36 @@ const docTemplate = `{
                 },
                 "updated": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.VulnerabilityData": {
+            "type": "object",
+            "required": [
+                "assigner",
+                "description",
+                "id",
+                "severities"
+            ],
+            "properties": {
+                "assigner": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "必填字段",
+                    "type": "string"
+                },
+                "severities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Severity"
+                    }
                 }
             }
         },
@@ -801,6 +896,17 @@ const docTemplate = `{
                 }
             }
         },
+        "vulnerabilityDbController.GetRankDistributionRespones": {
+            "type": "object",
+            "properties": {
+                "rankStats": {
+                    "$ref": "#/definitions/vulnerabilityDbController.RankStats"
+                },
+                "updated_at": {
+                    "type": "integer"
+                }
+            }
+        },
         "vulnerabilityDbController.QueryRequest": {
             "type": "object",
             "required": [
@@ -816,66 +922,23 @@ const docTemplate = `{
                 }
             }
         },
-        "vulnerabilityDbController.Severity": {
+        "vulnerabilityDbController.RankStats": {
             "type": "object",
             "properties": {
-                "rank": {
+                "critical": {
                     "type": "integer"
                 },
-                "scheme": {
-                    "type": "string"
+                "high": {
+                    "type": "integer"
                 },
-                "source": {
-                    "type": "string"
+                "low": {
+                    "type": "integer"
                 },
-                "value": {
-                    "description": "嵌套对象",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/vulnerabilityDbController.SeverityValue"
-                        }
-                    ]
-                }
-            }
-        },
-        "vulnerabilityDbController.SeverityValue": {
-            "type": "object",
-            "properties": {
-                "vector": {
-                    "type": "string"
+                "medium": {
+                    "type": "integer"
                 },
-                "version": {
-                    "type": "string"
-                }
-            }
-        },
-        "vulnerabilityDbController.VulnerabilityData": {
-            "type": "object",
-            "required": [
-                "assigner",
-                "description",
-                "id",
-                "severities"
-            ],
-            "properties": {
-                "assigner": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "description": "必填字段",
-                    "type": "string"
-                },
-                "severities": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/vulnerabilityDbController.Severity"
-                    }
+                "negligible": {
+                    "type": "integer"
                 }
             }
         },
