@@ -1,0 +1,12 @@
+# pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: did-trust-pvc
+spec:
+  storageClassName: nfs-storage
+  accessModes:
+    - ReadWriteMany  # 关键！允许多节点读写
+  resources:
+    requests:
+      storage: 10Gi

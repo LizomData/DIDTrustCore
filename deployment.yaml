@@ -1,0 +1,27 @@
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: did-trust-deployment
+spec:
+  replicas: 3  # 多副本实现负载均衡
+  selector:
+    matchLabels:
+      app: did-trust
+  template:
+    metadata:
+      labels:
+        app: did-trust
+    spec:
+      containers:
+        - name: did-trust
+          image: crpi-vq8ldauwbf0sfrxs.cn-shenzhen.personal.cr.aliyuncs.com/lanzom/didtrustcore:1.0.0  # 替换为你的镜像地址
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: shared-data
+              mountPath: /app/data
+      volumes:
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: did-trust-pvc

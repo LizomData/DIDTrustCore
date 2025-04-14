@@ -1,0 +1,13 @@
+# service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: did-trust-service
+spec:
+  type: LoadBalancer  # 云平台自动创建外部LB
+  selector:
+    app: did-trust
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000

@@ -1,0 +1,43 @@
+# did-trust-mac.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: did-trust-mac
+spec:
+  replicas: 5  # 与 5 个节点匹配
+  selector:
+    matchLabels:
+      app: did-trust
+  template:
+    metadata:
+      labels:
+        app: did-trust
+    spec:
+      containers:
+        - name: did-trust
+          image: didtrustcore:mac1.0
+          imagePullPolicy: Never  # 强制使用本地镜像
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: tmp-storage
+              mountPath: /app/tmp
+      volumes:
+        - name: tmp-storage
+          hostPath:
+            path: /tmp/k8s-data
+            type: DirectoryOrCreate  # 自动创建目录
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: did-trust-service
+spec:
+  type: NodePort
+  selector:
+    app: did-trust
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 30080  # 确保在 30000-32767 范围内

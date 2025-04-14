@@ -2,32 +2,30 @@
 FROM golang:1.24-alpine AS builder
 WORKDIR /app
 
-# 1. 配置国内镜像代理加速
-ENV GOPROXY=https://goproxy.cn,direct
+RUN apk --no-cache --update add ca-certificates
 
-# 2. 安装 CA 证书（解决 HTTPS 验证问题）
-RUN apk add --no-cache ca-certificates
-
-
-# 3. 分离依赖下载与代码构建
 COPY go.mod go.sum ./
 RUN go mod download
 
-
+# 将 org1.example.com 复制到构建环境的 /app 目录下
 COPY . .
-COPY org1.example.com /app/
+COPY org1.example.com /app/org1.example.com/
 
-# 4. 优化构建参数
+# 编译时将二进制输出到 /app 目录
 RUN CGO_ENABLED=0 GOOS=linux \
-    go build -ldflags="-s -w" -o /gin-app
+    go build -ldflags="-s -w" -trimpath -o /app/gin-app
 
-# 阶段2：最小化运行镜像
+# 阶段2：运行镜像
 FROM alpine:3.18
-RUN apk add --no-cache tzdata
 
-# 5. 从 builder 镜像继承 CA 证书
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+# 创建应用目录并保持与构建环境相同的路径
+WORKDIR /app
 
-COPY --from=builder /gin-app /gin-app
+# 完整复制构建环境的 /app 目录结构
+COPY --from=builder /app .
+
+
 EXPOSE 8000
-CMD ["/gin-app"]
+
+# 确保以正确权限运行
+CMD ["/app/gin-app"]

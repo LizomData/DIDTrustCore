@@ -1,0 +1,2 @@
+docker build --platform linux/amd64 -t didtrustcore:1.0.0 .
+
