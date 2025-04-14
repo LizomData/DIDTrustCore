@@ -86,6 +86,26 @@ definitions:
       type:
         type: string
     type: object
+  model.Severity:
+    properties:
+      rank:
+        type: integer
+      scheme:
+        type: string
+      source:
+        type: string
+      value:
+        allOf:
+        - $ref: '#/definitions/model.SeverityValue'
+        description: 嵌套对象
+    type: object
+  model.SeverityValue:
+    properties:
+      vector:
+        type: string
+      version:
+        type: string
+    type: object
   model.User:
     properties:
       password:
@@ -107,6 +127,27 @@ definitions:
         type: string
       updated:
         type: integer
+    type: object
+  model.VulnerabilityData:
+    properties:
+      assigner:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      id:
+        description: 必填字段
+        type: string
+      severities:
+        items:
+          $ref: '#/definitions/model.Severity'
+        type: array
+    required:
+    - assigner
+    - description
+    - id
+    - severities
     type: object
   pkgUploadController.GetDetailRequest:
     properties:
@@ -156,6 +197,13 @@ definitions:
       pkg_file_url:
         type: string
     type: object
+  vulnerabilityDbController.GetRankDistributionRespones:
+    properties:
+      rankStats:
+        $ref: '#/definitions/vulnerabilityDbController.RankStats'
+      updated_at:
+        type: integer
+    type: object
   vulnerabilityDbController.QueryRequest:
     properties:
       page:
@@ -166,46 +214,18 @@ definitions:
     - page
     - size
     type: object
-  vulnerabilityDbController.Severity:
+  vulnerabilityDbController.RankStats:
     properties:
-      rank:
+      critical:
         type: integer
-      scheme:
-        type: string
-      source:
-        type: string
-      value:
-        allOf:
-        - $ref: '#/definitions/vulnerabilityDbController.SeverityValue'
-        description: 嵌套对象
-    type: object
-  vulnerabilityDbController.SeverityValue:
-    properties:
-      vector:
-        type: string
-      version:
-        type: string
-    type: object
-  vulnerabilityDbController.VulnerabilityData:
-    properties:
-      assigner:
-        items:
-          type: string
-        type: array
-      description:
-        type: string
-      id:
-        description: 必填字段
-        type: string
-      severities:
-        items:
-          $ref: '#/definitions/vulnerabilityDbController.Severity'
-        type: array
-    required:
-    - assigner
-    - description
-    - id
-    - severities
+      high:
+        type: integer
+      low:
+        type: integer
+      medium:
+        type: integer
+      negligible:
+        type: integer
     type: object
   vulnerabilityScanningController.ScanRequest:
     properties:
@@ -482,7 +502,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/vulnerabilityDbController.VulnerabilityData'
+          $ref: '#/definitions/model.VulnerabilityData'
       produces:
       - application/json
       responses:
@@ -491,6 +511,27 @@ paths:
           schema:
             $ref: '#/definitions/model.BlobsCustomer'
       summary: 创建个人漏洞
+      tags:
+      - 漏洞库管理
+  /api/v1/vulnerability/getRankDistribution:
+    get:
+      consumes:
+      - application/json
+      description: 统计漏洞
+      parameters:
+      - description: jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 统计结果
+          schema:
+            $ref: '#/definitions/vulnerabilityDbController.GetRankDistributionRespones'
+      summary: 统计漏洞
       tags:
       - 漏洞库管理
   /api/v1/vulnerability/query:
@@ -516,7 +557,7 @@ paths:
         "200":
           description: 漏洞列表
           schema:
-            $ref: '#/definitions/vulnerabilityDbController.VulnerabilityData'
+            $ref: '#/definitions/model.VulnerabilityData'
       summary: 查询漏洞列表
       tags:
       - 漏洞库管理
@@ -543,7 +584,7 @@ paths:
         "200":
           description: 漏洞列表
           schema:
-            $ref: '#/definitions/vulnerabilityDbController.VulnerabilityData'
+            $ref: '#/definitions/model.VulnerabilityData'
       summary: 查询用户创建的漏洞
       tags:
       - 漏洞库管理

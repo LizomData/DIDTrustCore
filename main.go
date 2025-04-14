@@ -16,8 +16,9 @@ import (
 )
 
 func main() {
-	//grypeService.Service.RunGrypeWrapper("6.json", "/Users/q/Downloads/bom.spdx.json")
+
 	did_connnection.FabricClient = did_connnection.Connection()
+
 	// 加载多个APP的路由配置
 	routers.Include(userController.Routers, service.Routers, swagger.Routers, didController.Routers, sbomController.Routers, pkgUploadController.Routers, vulnerabilityScanningController.Routers, vulnerabilityDbController.Routers)
 	// 初始化路由

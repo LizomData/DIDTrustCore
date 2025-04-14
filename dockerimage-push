@@ -1,0 +1,2 @@
+docker tag didtrustcore:latest crpi-vq8ldauwbf0sfrxs.cn-shenzhen.personal.cr.aliyuncs.com/lanzom/didtrustcore:latest
+docker push crpi-vq8ldauwbf0sfrxs.cn-shenzhen.personal.cr.aliyuncs.com/lanzom/didtrustcore:latest

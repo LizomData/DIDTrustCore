@@ -1,2 +1,0 @@
-docker stop didtrustcontainer && docker rm didtrustcontainer
-docker run -d --name didtrustcontainer  -v ./tmp:/app/tmp -p 8000:8000 crpi-vq8ldauwbf0sfrxs.cn-shenzhen.personal.cr.aliyuncs.com/lanzom/didtrustcore:1.0.0
